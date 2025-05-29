@@ -67,7 +67,7 @@ document.addEventListener('DOMContentLoaded', () => {
             behavior: 'smooth' // スムーズなスクロールアニメーション
         });
     }
-    
+
     // 次のセクションへ進む関数
     function nextSection(nextNum) {
         showSection(nextNum);
@@ -117,7 +117,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (!firstInvalidField) firstInvalidField = email;
             }
         }
-        
+
         if (isValid) {
             nextSection(2);
         } else if (firstInvalidField) {
@@ -312,7 +312,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 totalTickets: totalTickets
             });
 
-            const fetchResponse = await fetch(`${APPS_SCRIPT_API_URL}?${params.toString()}`, {
+            const fetchResponse = await fetch(`<span class="math-inline">\{APPS\_SCRIPT\_API\_URL\}?</span>{params.toString()}`, {
                 method: 'GET'
             });
 
@@ -326,6 +326,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const response = await fetchResponse.json();
 
+            // ***** ここを修正します。GASからの応答形式が変わったため、期待するプロパティをチェックします。 *****
             if (!response || typeof response.isNormaMet === 'undefined') {
                 console.error("予期せぬGAS応答形式:", response);
                 displayError('normaCheck', 'ノルマチェック中に予期せぬエラーが発生しました。管理者に連絡してください。');
@@ -360,16 +361,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
         let html = '';
         html += `<p><strong>パート：</strong>${values.part}</p>`;
-        html += `<p><strong>お名前：</strong>${values.lastName} ${values.firstName}</p>`;
-        html += `<p><strong>メールアドレス：</strong>${values.email}</p>`;
+        html += `<p><strong>お名前：：</strong>${values.lastName} ${values.firstName}</p>`;
+        html += `<p><strong>メールアドレス：：</strong>${values.email}</p>`;
         html += `<p><strong>団員区分：：</strong>${values.memberType}</p>`;
 
         if (values.memberType === '夫婦・家族・兄弟') {
-            html += `<p><strong>ご家族のお名前：</strong>${values.familyLastName} ${values.familyFirstName}</p>`;
+            html += `<p><strong>ご家族のお名前：：</strong>${values.familyLastName} ${values.familyFirstName}</p>`;
             html += `<p><strong>あなたの年代：：</strong>${values.ageGroup}</p>`;
         }
 
-        html += `<p><strong>チケット枚数：</strong></p>`;
+        html += `<p><strong>チケット枚数：：</strong></p>`;
         html += `<ul>`;
         html += `<li>S券：${values.sTicket}枚</li>`;
         html += `<li>A券：${values.aTicket}枚</li>`;
@@ -397,9 +398,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 rankChangeText += '席のランクダウン可';
             }
         }
-        html += `<p><strong>席のランク変更：</strong>${rankChangeText || '回答無し'}</p>`;
+        html += `<p><strong>席のランク変更：：</strong>${rankChangeText || '回答無し'}</p>`;
 
-        html += `<p><strong>席割り当てのご相談事項・備考：</strong>`;
+        html += `<p><strong>席割り当てのご相談事項・備考：：</strong>`;
         if (values.seatPreference) {
             html += `${values.seatPreference.replace(/\n/g, '<br>')}`;
         } else {
@@ -563,6 +564,35 @@ document.addEventListener('DOMContentLoaded', () => {
     if (memberTypeSelect) {
         memberTypeSelect.addEventListener('change', toggleFamilyInfo);
     }
+
+    // ***** ここから追加・修正するイベントリスナーです *****
+
+    // チケット枚数入力フィールドにイベントリスナーを追加
+    const ticketInputs = ['sTicket', 'aTicket', 'bTicket', 'cTicket'];
+    ticketInputs.forEach(id => {
+        const inputElement = document.getElementById(id);
+        if (inputElement) {
+            // oninputではなく、addEventListenerを使う
+            inputElement.addEventListener('input', () => validateTicketInput(inputElement));
+        }
+    });
+
+    // 席のランク変更チェックボックスにイベントリスナーを追加
+    const rankUpCheckbox = document.getElementById('rankUp');
+    const rankDownCheckbox = document.getElementById('rankDown');
+    const rankNoChangeCheckbox = document.getElementById('rankNoChange');
+
+    if (rankUpCheckbox) {
+        rankUpCheckbox.addEventListener('change', () => handleRankChangeCheckbox(rankUpCheckbox));
+    }
+    if (rankDownCheckbox) {
+        rankDownCheckbox.addEventListener('change', () => handleRankChangeCheckbox(rankDownCheckbox));
+    }
+    if (rankNoChangeCheckbox) {
+        rankNoChangeCheckbox.addEventListener('change', () => handleRankChangeCheckbox(rankNoChangeCheckbox));
+    }
+    // ***** ここまで追加・修正するイベントリスナーです *****
+
     // 初期表示
     showSection(1);
     toggleFamilyInfo(); // 初期ロード時に家族情報グループの表示状態を適切に設定
