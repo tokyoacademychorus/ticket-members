@@ -1,3 +1,6 @@
+// 例: script.js の冒頭あたりに記述
+const APPS_SCRIPT_API_URL = 'https://script.google.com/macros/s/AKfycbzQn1IKFAbdDYQilVApYvnsKUynzCH1-17I9ztbh9dD8sht4Ae_NrFysKno-GJEJmQrfQ/exec';
+
 document.addEventListener('DOMContentLoaded', () => {
   // DOM要素の取得
   const sections = document.querySelectorAll('.form-section');
@@ -304,51 +307,86 @@ document.addEventListener('DOMContentLoaded', () => {
     const ageGroup = (memberType === '夫婦・家族・兄弟') ? document.getElementById('ageGroup').value : '';
     const totalTickets = sTicketVal + aTicketVal + bTicketVal + cTicketVal;
 
-    // 非同期処理をPromiseでラップして確実に結果を待つ
-    try {
-        const response = await new Promise((resolve, reject) => {
-            google.script.run
-                .withSuccessHandler(res => {
-                    console.log("GASからノルマチェック結果を受け取りました:", res);
-                    resolve(res);
-                })
-                .withFailureHandler(error => {
-                    console.error("GASからのノルマチェックエラー:", error);
-                    reject(error);
-                })
-                .calculateNorma(memberType, ageGroup, totalTickets);
-        });
+// calculateNormaを呼び出していた箇所
+// （変更前）
+// try {
+//     const response = await new Promise((resolve, reject) => {
+//         google.script.run
+//             .withSuccessHandler(res => {
+//                 console.log("GASからノルマチェック結果を受け取りました:", res);
+//                 resolve(res);
+//             })
+//             .withFailureHandler(error => {
+//                 console.error("GASからのノルマチェックエラー:", error);
+//                 reject(error);
+//             })
+//             .calculateNorma(memberType, ageGroup, totalTickets); // ここ
+//     });
+//     // ... responseを使った処理 ...
+// } catch (e) {
+//     // ... エラー処理 ...
+// }
 
-        if (!response || typeof response.isNormaMet === 'undefined') {
-            // responseがundefinedまたはisNormaMetプロパティがない場合
-            console.error("予期せぬGAS応答形式:", response);
-            displayError('normaCheck', 'ノルマチェック中に予期せぬエラーが発生しました。管理者に連絡してください。');
-            hideLoadingOverlay();
-            return;
-        }
 
-        if (!response.isNormaMet) {
-            // ノルマ未達成の場合
-            const errorMessage = response.errorMessage ? response.errorMessage : `ノルマ枚数不足です。申込必要枚数は合計${response.requiredTickets}枚です。`;
-            displayError('normaCheck', errorMessage);
-            document.getElementById('normaCheckErrorMessage').scrollIntoView({ behavior: 'smooth', block: 'center' });
-            hideLoadingOverlay();
-            return;
-        } else {
-            // ノルマ達成の場合、エラーメッセージをクリア
-            clearError('normaCheck');
-            // 確認画面の生成と表示
-            generateSummaryContent();
-            nextSection(4); // 確認画面へ
-            hideLoadingOverlay();
-        }
-    } catch (e) {
-        console.error("ノルマチェック処理エラー:", e);
-        // エラーハンドラで既にメッセージ表示しているはずだが、念のため
-        displayError('normaCheck', 'ノルマチェック中にシステムエラーが発生しました。管理者に連絡してください。（詳細: ' + e.message + '）');
+// GASからの応答を待つ部分（前回の回答で提示した fetch API の部分）
+try {
+    const params = new URLSearchParams({
+        action: 'getNormaData', // doGetでこのactionをチェックするようにしたと仮定
+        memberType: memberType,
+        ageGroup: ageGroup,
+        totalTickets: totalTickets
+    });
+
+    const fetchResponse = await fetch(`${APPS_SCRIPT_API_URL}?${params.toString()}`, {
+        method: 'GET'
+    });
+
+    // --- ここからが、あなたが提示してくれたコードと連携する部分の修正 ---
+
+    // HTTPステータスが正常かチェック
+    if (!fetchResponse.ok) {
+        // HTTPエラー（例: 404, 500など）の場合
+        const errorText = await fetchResponse.text(); // エラーの詳細を取得
+        console.error("GASからのHTTPエラー応答:", fetchResponse.status, fetchResponse.statusText, errorText);
+        displayError('normaCheck', `ノルマチェック中にサーバーエラーが発生しました (${fetchResponse.status})。管理者に連絡してください。`);
+        hideLoadingOverlay();
+        return; // ここで処理を中断
+    }
+
+    // JSONレスポンスをパース
+    const response = await fetchResponse.json(); // fetchResponseをresponseに格納
+
+    // あなたが提示してくれた既存のノルマチェック結果処理
+    if (!response || typeof response.isNormaMet === 'undefined') {
+        // responseがundefinedまたはisNormaMetプロパティがない場合
+        console.error("予期せぬGAS応答形式:", response);
+        displayError('normaCheck', 'ノルマチェック中に予期せぬエラーが発生しました。管理者に連絡してください。');
+        hideLoadingOverlay();
+        return;
+    }
+
+    if (!response.isNormaMet) {
+        // ノルマ未達成の場合
+        const errorMessage = response.errorMessage ? response.errorMessage : `ノルマ枚数不足です。申込必要枚数は合計${response.requiredTickets}枚です。`;
+        displayError('normaCheck', errorMessage);
+        document.getElementById('normaCheckErrorMessage').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        hideLoadingOverlay();
+        return;
+    } else {
+        // ノルマ達成の場合、エラーメッセージをクリア
+        clearError('normaCheck');
+        // 確認画面の生成と表示
+        generateSummaryContent();
+        nextSection(4); // 確認画面へ
         hideLoadingOverlay();
     }
-  }
+
+} catch (error) {
+    // ネットワークエラーなど、fetch自体が失敗した場合
+    console.error("ノルマチェック中にネットワークエラーが発生しました:", error);
+    displayError('normaCheck', 'ノルマチェック中に通信エラーが発生しました。ネットワーク接続を確認してください。');
+    hideLoadingOverlay();
+}
 
 
   // 確認画面の内容を生成する関数
