@@ -1,0 +1,1182 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<base target="_top">
+<meta charset="UTF-8">
+
+<title>第70回定期演奏会チケット申込フォーム</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+<style>
+/* 基本スタイル */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f0f2f5;
+    color: #333;
+    line-height: 1.6;
+    box-sizing: border-box;
+    scroll-behavior: smooth; /* スムーズスクロール */
+    -webkit-text-size-adjust: 100%; /* iOSでの自動フォントサイズ調整を無効化 */
+}
+
+.form-container {
+    max-width: 760px; /* PCでの最大幅 */
+    margin: 30px auto;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    overflow: hidden;
+    padding: 0;
+}
+
+h1 {
+    background-color: #241817;
+    color: white;
+    text-align: center;
+    padding: 25px 0;
+    margin: 0;
+    font-size: 2.2em; /* PCでの見出しサイズ */
+    letter-spacing: 1px;
+}
+
+h2 {
+    background-color: #e9ecef;
+    color: #2c3e50;
+    font-size: 1.8em; /* PCでのサブ見出しサイズ */
+    padding: 15px 30px;
+    border-bottom: 1px solid #dee2e6;
+    margin-bottom: 20px;
+}
+
+.form-section {
+    padding: 30px;
+    display: none;
+    animation: fadeIn 0.5s ease-out;
+}
+.form-section.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.form-group {
+    margin-bottom: 25px;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: #555;
+    font-size: 1.1em; /* PCでのラベルサイズ */
+}
+
+input[type="text"],
+input[type="email"],
+input[type="number"],
+select,
+textarea {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 16px; /* PCでの入力欄フォントサイズ */
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    box-sizing: border-box;
+    min-height: 44px; /* タップしやすい最低限の高さ (PCでも適用) */
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="number"]:focus,
+select:focus,
+textarea:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+    outline: none;
+}
+
+/* 枚数入力欄の上下の矢印を非表示にする */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+/* 姓・名 横並び用 (PC向け) */
+.name-group {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  width: 100%;
+}
+
+.name-group > div {
+  flex: 1;
+  min-width: 120px;
+  box-sizing: border-box;
+}
+
+/* 姓・名入力欄に対する具体的なスタイル */
+#lastName,
+#firstName,
+#familyLastName,
+#familyFirstName {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* 半角数字強制（枚数入力欄） */
+input[type="number"] {
+  ime-mode: inactive;
+}
+
+/* チェックボックスとテキストを横並びに */
+.checkbox-group {
+  margin-top: 10px;
+}
+.checkbox-group label {
+  display: flex /*!important*/;
+  align-items: center /*!important*/;
+  font-weight: normal;
+  cursor: pointer;
+  margin-bottom: 10px;
+  font-size: 1em; /* チェックボックスのラベルサイズ */
+}
+.checkbox-group input[type="checkbox"] {
+  width: auto /*!important*/;
+  min-width: 20px; /* タップしやすいように大きく */
+  height: 20px; /* タップしやすいように大きく */
+  margin-right: 10px /*!important*/; /* 間隔を広げる */
+  flex-shrink: 0 /*!important*/;
+  vertical-align: middle; /* テキストとのアラインメント調整 */
+}
+
+/* エラーメッセージ */
+.error-message {
+  color: #dc3545;
+  font-size: 0.95em; /* 少し大きく */
+  margin-top: 5px;
+  display: none;
+}
+.error-message.show {
+  display: block;
+}
+
+/* 枚数制限・半角数字エラー表示用 (PC向け) */
+.ticket-input-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.ticket-input-wrapper label {
+    flex-shrink: 0;
+    margin-bottom: 0;
+    font-size: 1.1em; /* 通常のlabelと同じサイズ */
+}
+.ticket-input-wrapper input[type="number"] {
+    width: 120px; /* 枚数入力欄の幅 */
+    flex-grow: 0;
+    flex-shrink: 0;
+    font-size: 1.1em; /* 枚数入力欄のフォントも大きく */
+}
+.ticket-input-wrapper .error-message {
+    flex-grow: 1;
+    text-align: left;
+    display: inline-block;
+    margin-top: 0;
+}
+
+
+/* ボタン */
+.button-group {
+  text-align: right;
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid #eee;
+}
+.button-group button {
+  padding: 14px 30px; /* ボタンのパディングを大きく */
+  border: none;
+  border-radius: 6px;
+  background-color: #1774E6;
+  color: white;
+  cursor: pointer;
+  font-size: 18px; /* ボタンのフォントサイズを大きく */
+  margin-left: 15px; /* ボタン間のマージンを調整 */
+  transition: background-color 0.3s ease, opacity 0.3s ease;
+  min-width: 120px; /* ボタンの最小幅 */
+}
+.button-group button:hover {
+  background-color: #3D5066;
+}
+.button-group button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+.button-group button.back-button {
+  background-color: #6c757d;
+}
+.button-group button.back-button:hover {
+  background-color: #5a6268;
+}
+
+/* ノルマメッセージ (ノルマチェックエラー用) */
+#normaCheckErrorMessage {
+  color: #dc3545;
+  font-size: 1.1em; /* 大きく */
+  font-weight: bold;
+  text-align: center;
+  margin-top: 15px;
+  margin-bottom: 15px;
+  padding: 12px; /* パディングを増やす */
+  border: 1px solid #dc3545;
+  background-color: #f8d7da;
+  border-radius: 6px;
+  display: none;
+}
+#normaCheckErrorMessage.show {
+  display: block;
+}
+
+/* モーダル */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0,0,0,0.7);
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.modal-content {
+  background-color: #fefefe;
+  margin: auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 90%; /* スマホでも見やすいようにデフォルトを90%に */
+  max-width: 1200px; /* PCでの最大幅をさらに拡大 */
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+  animation-name: animatetop;
+  animation-duration: 0.4s;
+  position: relative;
+  text-align: center;
+  overflow: auto; /* コンテンツがはみ出したらスクロールできるように */
+  max-height: 90vh; /* 画面高さいっぱいに広がらないように */
+}
+
+/* モーダル表示アニメーション */
+@keyframes animatetop {
+  from {top: -300px; opacity: 0}
+  to {top: 0; opacity: 1}
+}
+
+.close-button {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  position: absolute;
+  right: 15px;
+  top: 10px;
+  cursor: pointer;
+}
+
+.close-button:hover,
+.close-button:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.seating-chart-image {
+  max-width: 100%; /* 親要素 (modal-content) の幅に合わせる */
+  height: auto; /* アスペクト比を維持 */
+  display: block;
+  margin: 20px auto 0;
+  cursor: pointer;
+}
+
+/* 確認画面 */
+#summaryContent {
+  background-color: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+  line-height: 1.8;
+  font-size: 1.1em; /* 確認画面の基本フォントサイズを大きく */
+}
+#summaryContent strong {
+    display: inline-block;
+    width: 120px;
+    text-align: left;
+    margin-right: 10px;
+    vertical-align: top;
+    font-size: 1em; /* 相対的に調整 */
+}
+#summaryContent p {
+    margin-bottom: 8px;
+}
+
+/* 送信後画面 */
+#completionScreen {
+  padding: 50px;
+  font-size: 1.3em; /* 完了画面の基本フォントサイズを大きく */
+}
+#completionScreen h2 {
+  color: #84913F;
+  font-size: 2.2em; /* 完了画面の見出しを大きく */
+  margin-bottom: 20px;
+  background-color: transparent;
+  border: none;
+}
+#completionScreen p {
+  margin-bottom: 16px;
+}
+#completionScreen .email-info {
+  font-weight: bold;
+  color: #007bff;
+}
+
+/* ローディングオーバーレイ */
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  z-index: 1000;
+  color: white;
+  font-size: 1.6em; /* ローディングテキストのフォントサイズを大きく */
+  text-align: center;
+  display: none;
+}
+.loading-overlay .spinner {
+  border: 8px solid rgba(255, 255, 255, 0.3);
+  border-top: 8px solid #007bff;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  animation: spin 1s linear infinite;
+  margin-bottom: 20px;
+}
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+
+
+</style>
+</head>
+<body>
+
+<div class="form-container">
+  <h1>第70回定期演奏会チケット申込フォーム</h1>
+
+<form id="ticketForm">
+
+  <div id="section1" class="form-section active">
+    <h2>団員情報</h2>
+    <div class="form-group">
+      <label for="part">パート</label>
+      <select id="part" name="パート" required>
+        <option value="">選択してください</option>
+        <option value="ソプラノ">ソプラノ</option>
+        <option value="アルト">アルト</option>
+        <option value="テノール">テノール</option>
+        <option value="バス">バス</option>
+      </select>
+      <span class="error-message" id="partError"></span>
+    </div>
+    <div class="form-group">
+      <label>お名前</label>
+      <p style="font-size:0.9em; color:#666; margin-bottom:5px;">お名前を「姓」「名」に分けてご記入ください。</p>
+      <div class="name-group">
+        <div>
+          <input type="text" id="lastName" name="姓" placeholder="姓" required>
+        </div>
+        <div>
+          <input type="text" id="firstName" name="名" placeholder="名" required>
+        </div>
+      </div>
+      <div><span class="error-message" id="nameError"></span></div>
+    </div>
+    <div class="form-group">
+      <label for="email">メールアドレス</label>
+      <p style="font-size:0.9em; color:#666; margin-bottom:5px;">お申し込み内容を送りますのでメールアドレスをご記入ください。</p>
+      <input type="email" id="email" name="メールアドレス" required>
+      <span class="error-message" id="emailError"></span><span class="error-message" id="emailFormatError"></span>
+    </div>
+    <div class="button-group">
+      <button type="button" id="nextSection1Button">次へ</button>
+    </div>
+  </div>
+
+  <div id="section2" class="form-section">
+    <h2>団員区分</h2>
+    <div class="form-group">
+      <label for="memberType">団員区分</label>
+      <select id="memberType" name="団員区分" required>
+        <option value="">選択してください</option>
+        <option value="一般">一般</option>
+        <option value="夫婦・家族・兄弟">夫婦・家族・兄弟</option>
+        <option value="30歳未満">30歳未満</option>
+        <option value="24歳未満">24歳未満</option>
+      </select>
+      <span class="error-message" id="memberTypeError"></span>
+    </div>
+    <div id="familyInfoGroup" style="display: none;">
+      <div class="form-group">
+        <label>ご家族のお名前</label>
+        <p style="font-size:0.9em; color:#666; margin-bottom:5px;">ご家族のお名前を「姓」「名」に分けてご記入ください。ここに記入されたお名前の方は「一般」でお申し込みください。</p>
+        <div class="name-group">
+          <div>
+            <input type="text" id="familyLastName" name="家族姓" placeholder="姓">
+          </div>
+          <div>
+            <input type="text" id="familyFirstName" name="家族名" placeholder="名">
+          </div>
+        </div>
+        <span class="error-message" id="familyNameError"></span>
+      </div>
+      <div class="form-group">
+        <label for="ageGroup">あなたの年代</label>
+        <select id="ageGroup" name="あなたの年代">
+          <option value="">選択してください</option>
+          <option value="30歳以上">30歳以上</option>
+          <option value="30歳未満">30歳未満</option>
+          <option value="24歳未満">24歳未満</option>
+        </select>
+        <span class="error-message" id="ageGroupError"></span>
+      </div>
+    </div>
+    <div class="button-group">
+      <button type="button" class="back-button" id="backSection1Button">戻る</button>
+      <button type="button" id="nextSection2Button">次へ</button>
+    </div>
+  </div>
+
+  <div id="section3" class="form-section">
+    <h2>チケット種類・枚数</h2>
+    <p style="font-size:0.9em; color:#666; margin-bottom:15px;">チケットノルマを満たすよう、半角数字でご記入ください。</p>
+
+    <div class="form-group">
+      <div class="ticket-input-wrapper">
+        <label for="sTicket">S券</label>
+        <input type="number" id="sTicket" name="S券" min="0" oninput="validateTicketInput(this)" inputmode="numeric">
+        <span class="error-message" id="sTicketFormatError"></span>
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="ticket-input-wrapper">
+        <label for="aTicket">A券</label>
+        <input type="number" id="aTicket" name="A券" min="0" oninput="validateTicketInput(this)" inputmode="numeric">
+        <span class="error-message" id="aTicketFormatError"></span>
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="ticket-input-wrapper">
+        <label for="bTicket">B券</label>
+        <input type="number" id="bTicket" name="B券" min="0" max="3" oninput="validateTicketInput(this)" inputmode="numeric">
+        <span class="error-message" id="bTicketLimitError"></span>
+        <span class="error-message" id="bTicketFormatError"></span>
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="ticket-input-wrapper">
+        <label for="cTicket">C券</label>
+        <input type="number" id="cTicket" name="C券" min="0" max="2" oninput="validateTicketInput(this)" inputmode="numeric">
+        <span class="error-message" id="cTicketLimitError"></span>
+        <span class="error-message" id="cTicketFormatError"></span>
+      </div>
+    </div>
+
+    <div id="normaCheckErrorMessage" class="error-message"></div>
+
+    <div class="form-group">
+      <label style="font-size:1.1em;">離れた席のアサインについて</label>
+      <p style="font-size:0.9em; color:#666; margin-bottom:10px;">席の割り当てにおいて、基本的に連続した席をご用意する想定ですが、もしご用意できないケースが生じた場合に離れた席を割り当ててもよろしいですか？（無回答の場合も同様の処理をしますが、こちらにチェックを入れた方を優先に、離れた席をアサインします）</p>
+      <div class="checkbox-group">
+        <label for="separateSeats">
+          <input type="checkbox" id="separateSeats" name="離れた席の可否" value="許可する">
+          <span class="checkbox-text">席は離れていてもよい。</span>
+        </label>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label style="font-size:1.1em;">席のランク変更について</label>
+      <p style="font-size:0.9em; color:#666; margin-bottom:10px;">ご希望通りの席種をご用意できない場合、席のランクアップ／ダウンを委員会にて行います。変更の優先付けを行うため、ランク変更に同意できる方はチェックを入れてください。</p>
+      <div class="checkbox-group">
+        <label for="rankUp">
+          <input type="checkbox" id="rankUp" name="席のランク変更可否" value="席のランクアップ可" onclick="handleRankChangeCheckbox(this)">
+          <span class="checkbox-text">席のランクアップ可</span>
+        </label>
+      </div>
+      <div class="checkbox-group">
+        <label for="rankDown">
+          <input type="checkbox" id="rankDown" name="席のランク変更可否" value="席のランクダウン可" onclick="handleRankChangeCheckbox(this)">
+          <span class="checkbox-text">席のランクダウン可</span>
+        </label>
+      </div>
+      <div class="checkbox-group">
+        <label for="rankNoChange">
+          <input type="checkbox" id="rankNoChange" name="席のランク変更不可" value="ランク変更不可" onclick="handleRankChangeCheckbox(this)">
+          <span class="checkbox-text">ランク変更不可</span>
+        </label>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="seatPreference" style="font-size:1.1em;">座席割り当てのご相談事項・備考</label>
+      <p style="font-size:0.9em; color:#666; margin-bottom:10px;">座席割り当てについて、事情があって特定の場所を希望される方はその旨ご記入ください。（「車椅子のお客様のため専用席希望」等）<br>また、ざっくりした位置のご希望があれば
+        <a href="#" id="openSeatingChartModal">座席表</a>
+        <i class="fas fa-external-link-alt" title="別ウィンドウで開く"></i>
+        を参考にご記入ください。ご要望通りに割り当てられない場合もありますのでご了承ください。ピンポイントの座席番号指定は承りません。<br>他ご質問があればご入力ください。</p>
+      <textarea id="seatPreference" name="席割り当てのご相談事項・備考" rows="5" style="resize:vertical;"></textarea>
+    </div>
+
+    <div class="button-group">
+      <button type="button" class="back-button" id="backSection2Button">戻る</button>
+      <button type="button" id="nextSection3Button">確認画面へ</button>
+    </div>
+  </div>
+
+  <div id="section4" class="form-section">
+    <h2>お申込み内容のご確認</h2>
+    <p style="font-size:0.9em; color:#666; margin-bottom:20px;">下記の内容でお申し込みを送信します。ご確認いただき、修正があれば「戻る」をクリックして記入し直してください。</p>
+    <div id="summaryContent"></div>
+    <p style="font-size:0.9em; color:#666; margin-top:20px;">メール受信設定を行なわれている場合は「<span class="email-info">tac.tickets.comm@gmail.com</span>」を受信許可リストに入れてください。</p>
+
+    <div class="button-group">
+      <button type="button" class="back-button" id="backSection3Button">戻る</button>
+      <button type="button" id="submitFormButton">送信</button>
+    </div>
+  </div>
+
+  <div id="section5" class="form-section">
+    <div id="completionScreen">
+      <h2>お申し込みありがとうございました。</h2>
+      <p>この画面が表示されていれば、お申し込みは完了です。</p>
+      <p>申込内容確認のメールを送信しておりますので、ご入力いただいたメールアドレスの受信ボックスをご確認ください。</p>
+      <p style="font-size:0.9em; color:#666;">もし申込内容確認メールが届かない・紛失した・その他ご不明点がある場合は迷惑メールフォルダ等に移動されていないかご確認の上、<span class="email-info">「tac.tickets.comm@gmail.com」</span>にお問い合わせください。</p>
+      <p style="font-size:0.8em; color:#999;">※ 担当者に連携する時間が必要なためご回答には2〜3日要しますこと、ご了承ください。</p>
+    </div>
+  </div>
+
+</form>
+</div>
+
+<div id="loadingOverlay" class="loading-overlay">
+    <div class="spinner"></div>
+    <p>処理中です。しばらくお待ちください...</p>
+</div>
+
+<div id="seatingChartModal" class="modal">
+    <div class="modal-content">
+        <span class="close-button">&times;</span>
+        <h2>座席表</h2>
+        <img src="https://drive.google.com/uc?export=view&id=1CBIeHn6asCKv_2ID85HwA6BBR2QA2Rxw" alt="座席表" class="seating-chart-image">
+        <p>（画像をクリックすると閉じます）</p>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  // DOM要素の取得
+  const sections = document.querySelectorAll('.form-section');
+  let currentSection = 1; // 現在表示中のセクション番号
+
+  // エラーメッセージ要素を管理するためのマップ
+  const errorElements = {
+    part: document.getElementById('partError'),
+    lastName: document.getElementById('nameError'), // 姓と名の両方に同じエラーメッセージを共有
+    firstName: document.getElementById('nameError'),
+    email: document.getElementById('emailError'),
+    emailFormat: document.getElementById('emailFormatError'),
+    memberType: document.getElementById('memberTypeError'),
+    familyLastName: document.getElementById('familyNameError'), // 家族姓と名の両方に同じエラーメッセージを共有
+    familyFirstName: document.getElementById('familyNameError'),
+    ageGroup: document.getElementById('ageGroupError'),
+    sTicketFormat: document.getElementById('sTicketFormatError'),
+    aTicketFormat: document.getElementById('aTicketFormatError'),
+    bTicketFormat: document.getElementById('bTicketFormatError'),
+    cTicketFormat: document.getElementById('cTicketFormatError'),
+    bTicketLimit: document.getElementById('bTicketLimitError'),
+    cTicketLimit: document.getElementById('cTicketLimitError'),
+    normaCheck: document.getElementById('normaCheckErrorMessage')
+  };
+
+  // エラーメッセージの表示
+  function displayError(elementKey, message) {
+    const errorEl = errorElements[elementKey];
+    if (errorEl) {
+      errorEl.innerText = message;
+      errorEl.classList.add('show');
+      // 親のform-groupにエラークラスを追加してスタイルを適用することも可能
+    }
+  }
+
+  // エラーメッセージのクリア
+  function clearError(elementKey) {
+    const errorEl = errorElements[elementKey];
+    if (errorEl) {
+      errorEl.innerText = '';
+      errorEl.classList.remove('show');
+    }
+  }
+
+  // 全てのエラーメッセージをクリアするヘルパー関数
+  function clearAllErrors() {
+    for (const key in errorElements) {
+      clearError(key);
+    }
+  }
+
+  // セクション表示を切り替える関数
+  function showSection(sectionNumber) {
+    clearAllErrors(); // セクション移動時に全てのエラーメッセージをクリア
+    sections.forEach((section, index) => {
+      if (index + 1 === sectionNumber) {
+        section.classList.add('active');
+      } else {
+        section.classList.remove('active');
+      }
+    });
+    currentSection = sectionNumber;
+    // 画面の最上部へスクロールする
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth' // スムーズなスクロールアニメーション
+    });
+  }
+  
+  // 次のセクションへ進む関数
+  function nextSection(nextNum) {
+    showSection(nextNum);
+  }
+
+  // 前のセクションへ戻る関数
+  function prevSection(prevNum) {
+    showSection(prevNum);
+  }
+
+  // セクション1のバリデーションと遷移
+  function validateSection1AndNext() {
+    clearAllErrors();
+    let isValid = true;
+    let firstInvalidField = null;
+
+    const part = document.getElementById('part');
+    const lastName = document.getElementById('lastName');
+    const firstName = document.getElementById('firstName');
+    const email = document.getElementById('email');
+
+    if (!part.value) {
+      displayError('part', '必須入力欄です。');
+      isValid = false;
+      if (!firstInvalidField) firstInvalidField = part;
+    }
+    if (!lastName.value) {
+      displayError('lastName', '必須入力欄です。');
+      isValid = false;
+      if (!firstInvalidField) firstInvalidField = lastName;
+    }
+    if (!firstName.value) {
+      displayError('firstName', '必須入力欄です。');
+      isValid = false;
+      if (!firstInvalidField) firstInvalidField = firstName;
+    }
+    if (!email.value) {
+      displayError('email', '必須入力欄です。');
+      isValid = false;
+      if (!firstInvalidField) firstInvalidField = email;
+    } else {
+      // メールアドレスの厳密な正規表現チェック
+      const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+      if (!emailRegex.test(email.value)) {
+        displayError('emailFormat', '正しい形式でメールアドレスを入力してください。');
+        isValid = false;
+        if (!firstInvalidField) firstInvalidField = email;
+      }
+    }
+    
+    if (isValid) {
+      nextSection(2);
+    } else if (firstInvalidField) {
+      firstInvalidField.focus();
+    }
+  }
+
+  // セクション2のバリデーションと遷移
+  function validateSection2AndNext() {
+    clearAllErrors();
+    let isValid = true;
+    let firstInvalidField = null;
+
+    const memberType = document.getElementById('memberType');
+    if (!memberType.value) {
+      displayError('memberType', '必須入力欄です。');
+      isValid = false;
+      if (!firstInvalidField) firstInvalidField = memberType;
+    }
+
+    if (memberType.value === '夫婦・家族・兄弟') {
+      const familyLastName = document.getElementById('familyLastName');
+      const familyFirstName = document.getElementById('familyFirstName');
+      const ageGroup = document.getElementById('ageGroup');
+
+      if (!familyLastName.value) {
+        displayError('familyLastName', '必須入力欄です。');
+        isValid = false;
+        if (!firstInvalidField) firstInvalidField = familyLastName;
+      }
+      if (!familyFirstName.value) {
+        displayError('familyFirstName', '必須入力欄です。');
+        isValid = false;
+        if (!firstInvalidField) firstInvalidField = familyFirstName;
+      }
+      if (!ageGroup.value) {
+        displayError('ageGroup', '必須入力欄です。');
+        isValid = false;
+        if (!firstInvalidField) firstInvalidField = ageGroup;
+      }
+    }
+
+    if (isValid) {
+      // 団員区分に関わらず、必ずセクション3（チケット種類・枚数）へ遷移
+      nextSection(3); 
+    } else if (firstInvalidField) {
+      firstInvalidField.focus();
+    }
+  }
+
+  // セクション2の団員区分変更時の家族情報表示制御
+  function toggleFamilyInfo() {
+    const memberType = document.getElementById('memberType').value;
+    const familyInfoGroup = document.getElementById('familyInfoGroup');
+    const familyLastName = document.getElementById('familyLastName');
+    const familyFirstName = document.getElementById('familyFirstName');
+    const ageGroup = document.getElementById('ageGroup');
+
+    if (memberType === '夫婦・家族・兄弟') {
+      familyInfoGroup.style.display = 'block';
+      familyLastName.setAttribute('required', 'required');
+      familyFirstName.setAttribute('required', 'required');
+      ageGroup.setAttribute('required', 'required');
+    } else {
+      familyInfoGroup.style.display = 'none';
+      familyLastName.removeAttribute('required');
+      familyFirstName.removeAttribute('required');
+      ageGroup.removeAttribute('required');
+      // 非表示になったら入力値をクリアし、エラーもクリア
+      familyLastName.value = '';
+      familyFirstName.value = '';
+      ageGroup.value = '';
+      clearError('familyLastName');
+      clearError('ageGroup');
+    }
+  }
+
+  // チケット枚数入力の半角数字チェックと枚数制限チェック（リアルタイム）
+  function validateTicketInput(inputElement) {
+    clearError(inputElement.id + 'Format'); // まず形式エラーをクリア
+    clearError(inputElement.id + 'Limit'); // まず制限エラーをクリア
+
+    const value = inputElement.value;
+    if (value === '') { // 空欄も許容し、0として扱う
+        return true;
+    }
+
+    if (!/^\d*$/.test(value)) { // 半角数字以外が含まれている場合
+      displayError(inputElement.id + 'Format', '半角数字で入力してください。');
+      return false; // 数字形式エラーがある場合はそれ以上チェックしない
+    }
+
+    const numValue = parseInt(value) || 0; // 数値に変換、空欄は0とする
+
+    // 枚数制限チェック
+    if (inputElement.id === 'bTicket' && numValue > 3) {
+      displayError('bTicketLimit', '枚数制限をオーバーしています。（最大3枚）');
+      return false;
+    }
+    if (inputElement.id === 'cTicket' && numValue > 2) {
+      displayError('cTicketLimit', '枚数制限をオーバーしています。（最大2枚）');
+      return false;
+    }
+
+    // 全てのチェックをクリアしたら、エラーメッセージを非表示に
+    return true;
+  }
+
+  // 席のランク変更チェックボックスの排他制御
+  function handleRankChangeCheckbox(clickedCheckbox) {
+    const rankUp = document.getElementById('rankUp');
+    const rankDown = document.getElementById('rankDown');
+    const rankNoChange = document.getElementById('rankNoChange');
+
+    if (clickedCheckbox === rankNoChange) {
+      if (rankNoChange.checked) {
+        rankUp.checked = false;
+        rankDown.checked = false;
+        rankUp.disabled = true;
+        rankDown.disabled = true;
+      } else {
+        rankUp.disabled = false;
+        rankDown.disabled = false;
+      }
+    } else {
+      if (rankUp.checked || rankDown.checked) {
+        rankNoChange.checked = false;
+        rankNoChange.disabled = true;
+      } else {
+        rankNoChange.disabled = false;
+      }
+    }
+  }
+
+
+  // セクション3のバリデーションと確認画面への遷移
+  async function validateSection3AndNext() {
+    clearAllErrors();
+    let isValid = true;
+    let firstInvalidField = null;
+
+    // 半角数字、枚数制限のバリデーションを改めて実行
+    const sTicketInput = document.getElementById('sTicket');
+    const aTicketInput = document.getElementById('aTicket');
+    const bTicketInput = document.getElementById('bTicket');
+    const cTicketInput = document.getElementById('cTicket');
+
+    if (!validateTicketInput(sTicketInput)) { isValid = false; if (!firstInvalidField) firstInvalidField = sTicketInput; }
+    if (!validateTicketInput(aTicketInput)) { isValid = false; if (!firstInvalidField) firstInvalidField = aTicketInput; }
+    if (!validateTicketInput(bTicketInput)) { isValid = false; if (!firstInvalidField) firstInvalidField = bTicketInput; }
+    if (!validateTicketInput(cTicketInput)) { isValid = false; if (!firstInvalidField) firstInvalidField = cTicketInput; }
+
+    // 半角数字エラーや枚数制限エラーがあればここで終了
+    if (document.getElementById('sTicketFormatError').classList.contains('show') ||
+        document.getElementById('aTicketFormatError').classList.contains('show') ||
+        document.getElementById('bTicketFormatError').classList.contains('show') ||
+        document.getElementById('cTicketFormatError').classList.contains('show') ||
+        document.getElementById('bTicketLimitError').classList.contains('show') ||
+        document.getElementById('cTicketLimitError').classList.contains('show')) {
+        isValid = false; 
+        if (!firstInvalidField) { // 最初の不正フィールドにフォーカス
+            if (document.getElementById('sTicketFormatError').classList.contains('show')) firstInvalidField = sTicketInput;
+            else if (document.getElementById('aTicketFormatError').classList.contains('show')) firstInvalidField = aTicketInput;
+            else if (document.getElementById('bTicketFormatError').classList.contains('show')) firstInvalidField = bTicketInput;
+            else if (document.getElementById('cTicketFormatError').classList.contains('show')) firstInvalidField = cTicketInput;
+            else if (document.getElementById('bTicketLimitError').classList.contains('show')) firstInvalidField = bTicketInput;
+            else if (document.getElementById('cTicketLimitError').classList.contains('show')) firstInvalidField = cTicketInput;
+        }
+    }
+
+    if (!isValid) {
+      if (firstInvalidField) firstInvalidField.focus();
+      return; // 他のバリデーションエラーがあればここで終了
+    }
+
+    // 全てのチケット枚数フィールドが空の場合でもバリデーションは通過させる（0として扱うため）
+    const sTicketVal = parseInt(sTicketInput.value) || 0;
+    const aTicketVal = parseInt(aTicketInput.value) || 0;
+    const bTicketVal = parseInt(bTicketInput.value) || 0;
+    const cTicketVal = parseInt(cTicketInput.value) || 0;
+
+    showLoadingOverlay('ノルマを計算しています...');
+
+    const memberType = document.getElementById('memberType').value;
+    const ageGroup = (memberType === '夫婦・家族・兄弟') ? document.getElementById('ageGroup').value : '';
+    const totalTickets = sTicketVal + aTicketVal + bTicketVal + cTicketVal;
+
+    // 非同期処理をPromiseでラップして確実に結果を待つ
+    try {
+        const response = await new Promise((resolve, reject) => {
+            google.script.run
+                .withSuccessHandler(res => {
+                    console.log("GASからノルマチェック結果を受け取りました:", res);
+                    resolve(res);
+                })
+                .withFailureHandler(error => {
+                    console.error("GASからのノルマチェックエラー:", error);
+                    reject(error);
+                })
+                .calculateNorma(memberType, ageGroup, totalTickets);
+        });
+
+        if (!response || typeof response.isNormaMet === 'undefined') {
+            // responseがundefinedまたはisNormaMetプロパティがない場合
+            console.error("予期せぬGAS応答形式:", response);
+            displayError('normaCheck', 'ノルマチェック中に予期せぬエラーが発生しました。管理者に連絡してください。');
+            hideLoadingOverlay();
+            return;
+        }
+
+        if (!response.isNormaMet) {
+            // ノルマ未達成の場合
+            const errorMessage = response.errorMessage ? response.errorMessage : `ノルマ枚数不足です。申込必要枚数は合計${response.requiredTickets}枚です。`;
+            displayError('normaCheck', errorMessage);
+            document.getElementById('normaCheckErrorMessage').scrollIntoView({ behavior: 'smooth', block: 'center' });
+            hideLoadingOverlay();
+            return;
+        } else {
+            // ノルマ達成の場合、エラーメッセージをクリア
+            clearError('normaCheck');
+            // 確認画面の生成と表示
+            generateSummaryContent();
+            nextSection(4); // 確認画面へ
+            hideLoadingOverlay();
+        }
+    } catch (e) {
+        console.error("ノルマチェック処理エラー:", e);
+        // エラーハンドラで既にメッセージ表示しているはずだが、念のため
+        displayError('normaCheck', 'ノルマチェック中にシステムエラーが発生しました。管理者に連絡してください。（詳細: ' + e.message + '）');
+        hideLoadingOverlay();
+    }
+  }
+
+
+  // 確認画面の内容を生成する関数
+  function generateSummaryContent() {
+    const summaryDiv = document.getElementById('summaryContent');
+    const values = getFormValues(); // 現在のフォーム値を取得
+
+    let html = '';
+    html += `<p><strong>パート：</strong>${values.part}</p>`;
+    html += `<p><strong>お名前：</strong>${values.lastName} ${values.firstName}</p>`;
+    html += `<p><strong>メールアドレス：</strong>${values.email}</p>`;
+    html += `<p><strong>団員区分：：</strong>${values.memberType}</p>`;
+
+    if (values.memberType === '夫婦・家族・兄弟') {
+      html += `<p><strong>ご家族のお名前：</strong>${values.familyLastName} ${values.familyFirstName}</p>`;
+      html += `<p><strong>あなたの年代：：</strong>${values.ageGroup}</p>`;
+    }
+
+    html += `<p><strong>チケット枚数：</strong></p>`;
+    html += `<ul>`;
+    html += `<li>S券：${values.sTicket}枚</li>`;
+    html += `<li>A券：${values.aTicket}枚</li>`;
+    html += `<li>B券：${values.bTicket}枚</li>`;
+    html += `<li>C券：${values.cTicket}枚</li>`;
+    html += `</ul>`;
+
+    // 任意項目の表示制御（項目名は表示し、値がなければ何も表示しない）
+    html += `<p><strong>離れた席のアサイン：：</strong>`;
+    if (values.separateSeats) {
+        html += `OK`;
+    } else {
+        html += `回答無し`;
+    }
+    html += `</p>`;
+
+
+    // 席のランク変更
+    let rankChangeText = '';
+    if (values.rankNoChange) {
+        rankChangeText = 'ランク変更不可';
+    } else {
+        if (values.rankUp) rankChangeText += '席のランクアップ可';
+        if (values.rankDown) {
+            if (rankChangeText) rankChangeText += '／';
+            rankChangeText += '席のランクダウン可';
+        }
+    }
+    html += `<p><strong>席のランク変更：</strong>${rankChangeText || '回答無し'}</p>`;
+
+
+    html += `<p><strong>席割り当てのご相談事項・備考：</strong>`;
+    if (values.seatPreference) {
+      html += `${values.seatPreference.replace(/\n/g, '<br>')}`;
+    } else {
+      html += `回答無し`;
+    }
+    html += `</p>`;
+
+
+    summaryDiv.innerHTML = html;
+  }
+
+  // フォームの全入力値を取得してオブジェクトとして返す
+  function getFormValues() {
+    const form = document.getElementById('ticketForm');
+    const values = {};
+    const inputs = form.querySelectorAll('input, select, textarea');
+
+    inputs.forEach(input => {
+      if (input.type === 'checkbox') {
+        // チェックボックスは個別に処理
+        if (input.id === 'separateSeats') {
+            values.separateSeats = input.checked; // true/falseで値を格納
+        } else if (input.name === '席のランク変更可否' || input.name === '席のランク変更不可') {
+            values.rankUp = document.getElementById('rankUp').checked;
+            values.rankDown = document.getElementById('rankDown').checked;
+            values.rankNoChange = document.getElementById('rankNoChange').checked;
+        }
+      } else if (input.name) { // name属性があるものだけ取得
+        values[input.id || input.name] = input.value;
+      }
+    });
+
+    // 数値は文字列として取得されるので、数値に変換
+    values.sTicket = parseInt(values.sTicket) || 0;
+    values.aTicket = parseInt(values.aTicket) || 0;
+    values.bTicket = parseInt(values.bTicket) || 0;
+    values.cTicket = parseInt(values.cTicket) || 0;
+
+    return values;
+  }
+
+  // ローディングオーバーレイ表示関数
+  function showLoadingOverlay(message = '処理中です。しばらくお待ちください...') {
+    const overlay = document.getElementById('loadingOverlay');
+    overlay.querySelector('p').innerText = message;
+    overlay.style.display = 'flex';
+  }
+
+  // ローディングオーバーレイ非表示関数
+  function hideLoadingOverlay() {
+    document.getElementById('loadingOverlay').style.display = 'none';
+  }
+
+  // フォーム最終送信ボタンのイベントリスナー
+  document.getElementById('submitFormButton').addEventListener('click', async function() {
+    showLoadingOverlay('お申し込みを送信しています...');
+    const formData = getFormValues();
+
+    try {
+      console.log("クライアント: submitTicketApplicationを呼び出します。"); // ★追加ログ1★
+      const result = await new Promise((resolve, reject) => {
+          google.script.run
+              .withSuccessHandler(res => {
+                  console.log("GASから送信結果を受け取りました:", res);
+                  resolve(res);
+              })
+              .withFailureHandler(error => {
+                  console.error("GASからの送信エラー:", error);
+                  reject(error);
+              })
+              .submitTicketApplication(formData);
+      });
+
+      console.log("クライアント: GASからの結果を受け取り、処理を開始します。結果:", result); // ★追加ログ2★
+
+      if (result.success) {
+        console.log("クライアント: 申し込み成功、完了画面へ遷移します。"); // ★追加ログ3★
+        showSection(5); // 完了画面へ
+      } else {
+        console.log("クライアント: 申し込み失敗、エラーメッセージを表示します。"); // ★追加ログ4★
+        alert('お申し込みに失敗しました: ' + result.message);
+      }
+    } catch (e) {
+      console.error("JavaScriptからのGAS呼び出しエラー:", e);
+      alert('システムエラーが発生しました。開発者にお問い合わせください。\nエラー詳細: ' + e.message);
+    } finally {
+      // 成功・失敗どちらの場合でも、最後にオーバーレイを非表示にする
+      console.log("クライアント: ローディングオーバーレイを非表示にします。"); // ★追加ログ5★
+      hideLoadingOverlay();
+    }
+  });
+
+
+    const openModalLink = document.getElementById('openSeatingChartModal');
+    const seatingChartModal = document.getElementById('seatingChartModal');
+    const closeButton = seatingChartModal.querySelector('.close-button');
+    const seatingChartImage = seatingChartModal.querySelector('.seating-chart-image');
+
+    // リンクをクリックでモーダルを開く
+    if (openModalLink) {
+        openModalLink.addEventListener('click', (event) => {
+            event.preventDefault(); // デフォルトのリンク動作をキャンセル
+            seatingChartModal.style.display = 'flex'; // flexを使って中央揃えを有効にする
+            // ここに画像のURLを設定
+            seatingChartImage.src = "https://image.jimcdn.com/app/cms/image/transf/dimension=856x10000:format=png/path/s5bd072393dfe96d6/image/id3d5e66f11c6e827/version/1748520505/%E6%9D%B1%E4%BA%AC%E3%82%A2%E3%82%AB%E3%83%87%E3%83%9F%E3%83%BC%E5%90%88%E5%94%B1%E5%9B%A3%E7%AC%AC%EF%BC%97%EF%BC%90%E5%9B%9E%E5%AE%9A%E6%9C%9F%E6%BC%94%E5%A5%8F%E4%BC%9A%E7%94%A8%E3%82%AA%E3%83%9A%E3%83%A9%E3%82%B7%E3%83%86%E3%82%A3%E5%BA%A7%E5%B8%AD%E8%A1%A8.png";
+        });
+    }
+
+    // 閉じるボタンをクリックでモーダルを閉じる
+    if (closeButton) {
+        closeButton.addEventListener('click', () => {
+            seatingChartModal.style.display = 'none';
+        });
+    }
+
+    // 画像自体をクリックでモーダルを閉じる
+    if (seatingChartImage) {
+        seatingChartImage.addEventListener('click', () => {
+            seatingChartModal.style.display = 'none';
+        });
+    }
+
+    // モーダルの外側をクリックで閉じる
+    if (seatingChartModal) {
+        window.addEventListener('click', (event) => {
+            if (event.target === seatingChartModal) {
+                seatingChartModal.style.display = 'none';
+            }
+        });
+    }
+
+    // セクション1の「次へ」ボタンにイベントリスナーを追加
+  const nextSection1Button = document.getElementById('nextSection1Button');
+  if (nextSection1Button) {
+    nextSection1Button.addEventListener('click', validateSection1AndNext);
+  }
+  // セクション2の「次へ」ボタンにイベントリスナーを追加
+  const nextSection2Button = document.getElementById('nextSection2Button');
+  if (nextSection2Button) {
+    nextSection2Button.addEventListener('click', validateSection2AndNext);
+  }
+  // セクション3の「確認画面へ」ボタンにイベントリスナーを追加
+  const nextSection3Button = document.getElementById('nextSection3Button');
+  if (nextSection3Button) {
+    nextSection3Button.addEventListener('click', validateSection3AndNext);
+  }
+
+  // 戻るボタンのイベントリスナーを追加
+  const backSection1Button = document.getElementById('backSection1Button');
+  if (backSection1Button) {
+    backSection1Button.addEventListener('click', () => prevSection(1));
+  }
+  const backSection2Button = document.getElementById('backSection2Button');
+  if (backSection2Button) {
+    backSection2Button.addEventListener('click', () => prevSection(2));
+  }
+  const backSection3Button = document.getElementById('backSection3Button');
+  if (backSection3Button) {
+    backSection3Button.addEventListener('click', () => prevSection(3));
+  }
+
+  // 団員区分の選択変更時に家族情報の表示を切り替えるイベントリスナー
+  const memberTypeSelect = document.getElementById('memberType');
+  if (memberTypeSelect) {
+    memberTypeSelect.addEventListener('change', toggleFamilyInfo);
+  }
+  // 初期表示
+  showSection(1);
+  toggleFamilyInfo(); // 初期ロード時に家族情報グループの表示状態を適切に設定
+});
+</script>
+</body>
+</html>
