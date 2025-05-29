@@ -110,103 +110,99 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!firstInvalidField) firstInvalidField = email;
         } else {
             // メールアドレスの厳密な正規表現チェック
-            const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-            if (!emailRegex.test(email.value)) {
-                displayError('emailFormat', '正しい形式でメールアドレスを入力してください。');
-                isValid = false;
-                if (!firstInvalidField) firstInvalidField = email;
-            }
-        }
-
-        if (isValid) {
-            nextSection(2);
-        } else if (firstInvalidField) {
-            firstInvalidField.focus();
-        }
-    }
-
-    // セクション2のバリデーションと遷移
-    function validateSection2AndNext() {
-        clearAllErrors();
-        let isValid = true;
-        let firstInvalidField = null;
-
-        const memberType = document.getElementById('memberType');
-        if (!memberType.value) {
-            displayError('memberType', '必須入力欄です。');
-            isValid = false;
-            if (!firstInvalidField) firstInvalidField = memberType;
-        }
-
-        if (memberType.value === '夫婦・家族・兄弟') {
-            const familyLastName = document.getElementById('familyLastName');
-            const familyFirstName = document.getElementById('familyFirstName');
-            const ageGroup = document.getElementById('ageGroup');
-
-            if (!familyLastName.value) {
-                displayError('familyLastName', '必須入力欄です。');
-                isValid = false;
-                if (!firstInvalidField) firstInvalidField = familyLastName;
-            }
-            if (!familyFirstName.value) {
-                displayError('familyFirstName', '必須入力欄です。');
-                isValid = false;
-                if (!firstInvalidField) firstInvalidField = familyFirstName;
-            }
-            if (!ageGroup.value) {
-                displayError('ageGroup', '必須入力欄です。');
-                isValid = false;
-                if (!firstInvalidField) firstInvalidField = ageGroup;
-            }
-        }
-
-        if (isValid) {
-            // 団員区分に関わらず、必ずセクション3（チケット種類・枚数）へ遷移
-            nextSection(3);    
-        } else if (firstInvalidField) {
-            firstInvalidField.focus();
-        }
-    }
-
-    // セクション2の団員区分変更時の家族情報表示制御
-    function toggleFamilyInfo() {
-        const memberType = document.getElementById('memberType').value;
-        const familyInfoGroup = document.getElementById('familyInfoGroup');
-        const familyLastName = document.getElementById('familyLastName');
-        const familyFirstName = document.getElementById('familyFirstName');
-        const ageGroup = document.getElementById('ageGroup');
-
-        if (memberType === '夫婦・家族・兄弟') {
-            familyInfoGroup.style.display = 'block';
-            familyLastName.setAttribute('required', 'required');
-            familyFirstName.setAttribute('required', 'required');
-            ageGroup.setAttribute('required', 'required');
-        } else {
-            familyInfoGroup.style.display = 'none';
-            familyLastName.removeAttribute('required');
-            familyFirstName.removeAttribute('required');
-            ageGroup.removeAttribute('required');
-            // 非表示になったら入力値をクリアし、エラーもクリア
-            familyLastName.value = '';
-            familyFirstName.value = '';
-            ageGroup.value = '';
-            clearError('familyLastName');
-            clearError('ageGroup');
-        }
-    }
-
-    // チケット枚数入力の半角数字チェックと枚数制限チェック（リアルタイム）
-    function validateTicketInput(inputElement) {
-        clearError(inputElement.id + 'Format'); // まず形式エラーをクリア
-        clearError(inputElement.id + 'Limit'); // まず制限エラーをクリア
-
-        const value = inputElement.value;
-        if (value === '') { // 空欄も許容し、0として扱う
-            return true;
-        }
-
-        if (!/^\d*$/.test(value)) { // 半角数字以外が含まれている場合
+            const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}<span class="math-inline">/;
+if \(\!emailRegex\.test\(email\.value\)\) \{
+displayError\('emailFormat', '正しい形式でメールアドレスを入力してください。'\);
+isValid \= false;
+if \(\!firstInvalidField\) firstInvalidField \= email;
+\}
+\}
+if \(isValid\) \{
+nextSection\(2\);
+\} else if \(firstInvalidField\) \{
+firstInvalidField\.focus\(\);
+\}
+\}
+// セクション2のバリデーションと遷移
+function validateSection2AndNext\(\) \{
+clearAllErrors\(\);
+let isValid \= true;
+let firstInvalidField \= null;
+const memberType \= document\.getElementById\('memberType'\);
+if \(\!memberType\.value\) \{
+displayError\('memberType', '必須入力欄です。'\);
+isValid \= false;
+if \(\!firstInvalidField\) firstInvalidField \= memberType;
+\}
+if \(memberType\.value \=\=\= '夫婦・家族・兄弟'\) \{
+const familyLastName \= document\.getElementById\('familyLastName'\);
+const familyFirstName \= document\.getElementById\('familyFirstName'\);
+const ageGroup \= document\.getElementById\('ageGroup'\);
+if \(\!familyLastName\.value\) \{
+displayError\('familyLastName', '必須入力欄です。'\);
+isValid \= false;
+if \(\!firstInvalidField\) firstInvalidField \= familyLastName;
+\}
+if \(\!familyFirstName\.value\) \{
+displayError\('familyFirstName', '必須入力欄です。'\);
+isValid \= false;
+if \(\!firstInvalidField\) firstInvalidField \= familyFirstName;
+\}
+if \(\!ageGroup\.value\) \{
+displayError\('ageGroup', '必須入力欄です。'\);
+isValid \= false;
+if \(\!firstInvalidField\) firstInvalidField \= ageGroup;
+\}
+\}
+if \(isValid\) \{
+// 団員区分に関わらず、必ずセクション3（チケット種類・枚数）へ遷移
+nextSection\(3\);
+\} else if \(firstInvalidField\) \{
+firstInvalidField\.focus\(\);
+\}
+\}
+// セクション2の団員区分変更時の家族情報表示制御
+function toggleFamilyInfo\(\) \{
+const memberType \= document\.getElementById\('memberType'\)\.value;
+const familyInfoGroup \= document\.getElementById\('familyInfoGroup'\);
+const familyLastName \= document\.getElementById\('familyLastName'\);
+const familyFirstName \= document\.getElementById\('familyFirstName'\);
+const ageGroup \= document\.getElementById\('ageGroup'\);
+if \(memberType \=\=\= '夫婦・家族・兄弟'\) \{
+familyInfoGroup\.style\.display \= 'block';
+familyLastName\.setAttribute\('required', 'required'\);
+familyFirstName\.setAttribute\('required', 'required'\);
+ageGroup\.setAttribute\('required', 'required'\);
+\} else \{
+familyInfoGroup\.style\.display \= 'none';
+familyLastName\.removeAttribute\('required'\);
+familyFirstName\.removeAttribute\('required'\);
+ageGroup\.removeAttribute\('required'\);
+// 非表示になったら入力値をクリアし、エラーもクリア
+familyLastName\.value \= '';
+familyFirstName\.value \= '';
+ageGroup\.value \= '';
+clearError\('familyLastName'\);
+clearError\('ageGroup'\);
+\}
+// 団員区分変更時にノルマチェックを再実行
+checkNorma\(\);
+\}
+/\*\*
+\* チケット枚数入力のバリデーションと合計枚数の更新を行う関数
+\* @param \{HTMLInputElement\} inputElement \- 変更されたチケット入力フィールドの要素
+\*/
+function validateTicketInput\(inputElement\) \{
+clearError\(inputElement\.id \+ 'Format'\); // まず形式エラーをクリア
+clearError\(inputElement\.id \+ 'Limit'\); // まず制限エラーをクリア
+const value \= inputElement\.value;
+if \(value \=\=\= ''\) \{ // 空欄も許容し、0として扱う
+updateTotalTickets\(\); // 合計枚数を更新
+return true;
+\}
+if \(\!/^\\d\*</span>/.test(value)) { // 半角数字以外が含まれている場合
             displayError(inputElement.id + 'Format', '半角数字で入力してください。');
+            updateTotalTickets(); // 合計枚数を更新（不正な値は0として扱う）
             return false; // 数字形式エラーがある場合はそれ以上チェックしない
         }
 
@@ -215,16 +211,137 @@ document.addEventListener('DOMContentLoaded', () => {
         // 枚数制限チェック
         if (inputElement.id === 'bTicket' && numValue > 3) {
             displayError('bTicketLimit', '枚数制限をオーバーしています。（最大3枚）');
+            updateTotalTickets(); // 合計枚数を更新
             return false;
         }
         if (inputElement.id === 'cTicket' && numValue > 2) {
             displayError('cTicketLimit', '枚数制限をオーバーしています。（最大2枚）');
+            updateTotalTickets(); // 合計枚数を更新
             return false;
         }
 
         // 全てのチェックをクリアしたら、エラーメッセージを非表示に
+        updateTotalTickets(); // ここで合計枚数を更新
         return true;
     }
+
+    /**
+     * S, A, B, C券の合計枚数を計算し、表示を更新する関数
+     * ノルマチェックも呼び出す
+     */
+    function updateTotalTickets() {
+        const sTicket = parseInt(document.getElementById('sTicket').value) || 0;
+        const aTicket = parseInt(document.getElementById('aTicket').value) || 0;
+        const bTicket = parseInt(document.getElementById('bTicket').value) || 0;
+        const cTicket = parseInt(document.getElementById('cTicket').value) || 0;
+        const total = sTicket + aTicket + bTicket + cTicket;
+
+        const totalTicketsElement = document.getElementById('totalTickets');
+        if (totalTicketsElement) {
+            totalTicketsElement.textContent = total; // 表示更新
+        }
+        
+        // 合計枚数が変わったのでノルマチェックを再実行
+        checkNorma();
+    }
+
+    /**
+     * Google Apps Scriptを呼び出してノルマチェックを行う関数
+     */
+    async function checkNorma() {
+        const memberTypeSelect = document.getElementById('memberType');
+        const ageGroupSelect = document.getElementById('ageGroup');
+        const totalTicketsSpan = document.getElementById('totalTickets');
+
+        const memberType = memberTypeSelect ? memberTypeSelect.value : '';
+        const ageGroup = ageGroupSelect ? ageGroupSelect.value : '';
+        const totalTickets = totalTicketsSpan ? parseInt(totalTicketsSpan.textContent) || 0 : 0;
+
+        const normaMessageElement = document.getElementById('normaMessage'); // HTMLでこのIDの要素があることを想定
+        const confirmButton = document.getElementById('confirmButton'); // HTMLでこのIDの要素があることを想定
+
+        // 団員区分が選択されていない場合はノルマチェックを行わない
+        if (!memberType) {
+            if (normaMessageElement) {
+                normaMessageElement.textContent = '団員区分を選択してください。';
+                normaMessageElement.style.color = 'gray';
+            }
+            if (confirmButton) confirmButton.disabled = true; // 確認ボタンを無効にする
+            return;
+        }
+
+        // 「夫婦・家族・兄弟」選択時のみ年代の選択を必須とする
+        if (memberType === '夫婦・家族・兄弟' && !ageGroup) {
+            if (normaMessageElement) {
+                normaMessageElement.textContent = '年代を選択してください。';
+                normaMessageElement.style.color = 'gray';
+            }
+            if (confirmButton) confirmButton.disabled = true; // 確認ボタンを無効にする
+            return;
+        }
+
+        // APPS_SCRIPT_API_URLが正しく設定されているか最終チェック
+        if (typeof APPS_SCRIPT_API_URL === 'undefined' || !APPS_SCRIPT_API_URL || APPS_SCRIPT_API_URL.includes('{APPS_SCRIPT_API_URL}')) {
+            if (normaMessageElement) {
+                normaMessageElement.textContent = 'エラー: スクリプトAPIのURLが設定されていません。管理者に連絡してください。';
+                normaMessageElement.style.color = 'red';
+            }
+            if (confirmButton) confirmButton.disabled = true;
+            console.error('APPS_SCRIPT_API_URL is not set or is incorrect.');
+            return;
+        }
+
+        const params = new URLSearchParams({
+            action: 'getNormaData',
+            memberType: memberType,
+            ageGroup: ageGroup,
+            totalTickets: totalTickets
+        });
+
+        try {
+            const response = await fetch(`${APPS_SCRIPT_API_URL}?${params.toString()}`);
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.error(`GASからのHTTPエラー応答: ${response.status} ${errorText}`);
+                if (normaMessageElement) {
+                     normaMessageElement.textContent = `ノルマチェック中にサーバーエラーが発生しました (${response.status})。管理者に連絡してください。`;
+                     normaMessageElement.style.color = 'red';
+                }
+                if (confirmButton) confirmButton.disabled = true;
+                return;
+            }
+            const data = await response.json();
+            console.log("ノルマチェック結果:", data);
+
+            if (data.errorMessage) {
+                if (normaMessageElement) {
+                    normaMessageElement.textContent = `エラー: ${data.errorMessage}`;
+                    normaMessageElement.style.color = 'red';
+                }
+                if (confirmButton) confirmButton.disabled = true;
+            } else {
+                if (normaMessageElement) {
+                    if (data.isNormaMet) {
+                        normaMessageElement.textContent = `ノルマ (${data.requiredTickets}枚) を達成しています。`;
+                        normaMessageElement.style.color = 'green';
+                    } else {
+                        normaMessageElement.textContent = `ノルマ (${data.requiredTickets}枚) 不足です。申込必要枚数は合計${data.requiredTickets}枚です。`;
+                        normaMessageElement.style.color = 'orange';
+                    }
+                }
+                // ノルマ不足でも、確認画面への遷移や最終送信はできるようにする
+                if (confirmButton) confirmButton.disabled = false;
+            }
+        } catch (error) {
+            console.error("ノルマチェック中にエラーが発生しました:", error);
+            if (normaMessageElement) {
+                normaMessageElement.textContent = `ノルマチェック中に通信エラーが発生しました。ネットワーク接続を確認してください。（エラー詳細: ${error.message}）`;
+                normaMessageElement.style.color = 'red';
+            }
+            if (confirmButton) confirmButton.disabled = true;
+        }
+    }
+
 
     // 席のランク変更チェックボックスの排他制御
     function handleRankChangeCheckbox(clickedCheckbox) {
@@ -264,19 +381,21 @@ document.addEventListener('DOMContentLoaded', () => {
         const bTicketInput = document.getElementById('bTicket');
         const cTicketInput = document.getElementById('cTicket');
 
+        // `validateTicketInput` は既にイベントリスナーでリアルタイムに動いているが、
+        // 念のためここで最終チェックし、エラーがあればここで止める
         if (!validateTicketInput(sTicketInput)) { isValid = false; if (!firstInvalidField) firstInvalidField = sTicketInput; }
         if (!validateTicketInput(aTicketInput)) { isValid = false; if (!firstInvalidField) firstInvalidField = aTicketInput; }
         if (!validateTicketInput(bTicketInput)) { isValid = false; if (!firstInvalidField) firstInvalidField = bTicketInput; }
         if (!validateTicketInput(cTicketInput)) { isValid = false; if (!firstInvalidField) firstInvalidField = cTicketInput; }
 
-        // 半角数字エラーや枚数制限エラーがあればここで終了
+        // もしvalidateTicketInputがエラーを表示している場合、isValidをfalseにする
         if (document.getElementById('sTicketFormatError').classList.contains('show') ||
             document.getElementById('aTicketFormatError').classList.contains('show') ||
             document.getElementById('bTicketFormatError').classList.contains('show') ||
             document.getElementById('cTicketFormatError').classList.contains('show') ||
             document.getElementById('bTicketLimitError').classList.contains('show') ||
             document.getElementById('cTicketLimitError').classList.contains('show')) {
-            isValid = false; 
+            isValid = false;
             if (!firstInvalidField) { // 最初の不正フィールドにフォーカス
                 if (document.getElementById('sTicketFormatError').classList.contains('show')) firstInvalidField = sTicketInput;
                 else if (document.getElementById('aTicketFormatError').classList.contains('show')) firstInvalidField = aTicketInput;
@@ -312,7 +431,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 totalTickets: totalTickets
             });
 
-            const fetchResponse = await fetch(`<span class="math-inline">\{APPS\_SCRIPT\_API\_URL\}?</span>{params.toString()}`, {
+            // ★★★ ここを修正します。テンプレートリテラルの${}で変数を展開します。 ★★★
+            const fetchResponse = await fetch(`${APPS_SCRIPT_API_URL}?${params.toString()}`, {
                 method: 'GET'
             });
 
@@ -377,6 +497,10 @@ document.addEventListener('DOMContentLoaded', () => {
         html += `<li>B券：${values.bTicket}枚</li>`;
         html += `<li>C券：${values.cTicket}枚</li>`;
         html += `</ul>`;
+
+        // チケット合計枚数を表示
+        html += `<p><strong>合計枚数：</strong>${values.sTicket + values.aTicket + values.bTicket + values.cTicket}枚</p>`;
+
 
         // 任意項目の表示制御（項目名は表示し、値がなければ何も表示しない）
         html += `<p><strong>離れた席のアサイン：：</strong>`;
@@ -460,18 +584,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
         try {
             console.log("クライアント: submitTicketApplicationを呼び出します。");
-            const result = await new Promise((resolve, reject) => {
-                google.script.run
-                    .withSuccessHandler(res => {
-                        console.log("GASから送信結果を受け取りました:", res);
-                        resolve(res);
-                    })
-                    .withFailureHandler(error => {
-                        console.error("GASからの送信エラー:", error);
-                        reject(error);
-                    })
-                    .submitTicketApplication(formData);
+            // google.script.run を使う場合は、WebアプリのデプロイURLではなく、
+            // そのWebアプリを公開しているHTMLファイル内で使用する必要があります。
+            // GitHub Pagesからのfetchリクエストとは異なります。
+            // ここでfetchを使うのであれば、formDataをURLSearchParamsに変換してGETリクエストに含める必要があります。
+            // あるいはPOSTリクエストでJSONとして送信します。
+            // 現状のHTMLがWebアプリとして公開されている場合、google.script.runは動作しますが、
+            // GitHub Pagesからは動作しません。
+            // 今回はfetchを使うように修正します。
+            const params = new URLSearchParams(formData); // formDataを直接SearchParamsにする
+
+            const fetchResponse = await fetch(`${APPS_SCRIPT_API_URL}?${params.toString()}`, {
+                method: 'GET' // GASのdoGetを使うのでGET
             });
+
+            if (!fetchResponse.ok) {
+                const errorText = await fetchResponse.text();
+                console.error("GASからのHTTPエラー応答:", fetchResponse.status, fetchResponse.statusText, errorText);
+                throw new Error(`サーバーエラーが発生しました (${fetchResponse.status})。詳細: ${errorText.substring(0, 100)}...`);
+            }
+
+            const result = await fetchResponse.json();
 
             console.log("クライアント: GASからの結果を受け取り、処理を開始します。結果:", result);
 
@@ -490,6 +623,7 @@ document.addEventListener('DOMContentLoaded', () => {
             hideLoadingOverlay();
         }
     });
+
 
     const openModalLink = document.getElementById('openSeatingChartModal');
     const seatingChartModal = document.getElementById('seatingChartModal');
@@ -565,14 +699,11 @@ document.addEventListener('DOMContentLoaded', () => {
         memberTypeSelect.addEventListener('change', toggleFamilyInfo);
     }
 
-    // ***** ここから追加・修正するイベントリスナーです *****
-
     // チケット枚数入力フィールドにイベントリスナーを追加
     const ticketInputs = ['sTicket', 'aTicket', 'bTicket', 'cTicket'];
     ticketInputs.forEach(id => {
         const inputElement = document.getElementById(id);
         if (inputElement) {
-            // oninputではなく、addEventListenerを使う
             inputElement.addEventListener('input', () => validateTicketInput(inputElement));
         }
     });
@@ -591,9 +722,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (rankNoChangeCheckbox) {
         rankNoChangeCheckbox.addEventListener('change', () => handleRankChangeCheckbox(rankNoChangeCheckbox));
     }
-    // ***** ここまで追加・修正するイベントリスナーです *****
 
     // 初期表示
     showSection(1);
     toggleFamilyInfo(); // 初期ロード時に家族情報グループの表示状態を適切に設定
+    updateTotalTickets(); // ページロード時にチケット合計とノルマを計算
 });
