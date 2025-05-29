@@ -607,4 +607,3 @@ try {
   // 初期表示
   showSection(1);
   toggleFamilyInfo(); // 初期ロード時に家族情報グループの表示状態を適切に設定
-});
