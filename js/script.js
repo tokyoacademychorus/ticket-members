@@ -8,12 +8,12 @@ document.addEventListener('DOMContentLoaded', () => {
     // エラーメッセージ要素を管理するためのマップ
     const errorElements = {
         part: document.getElementById('partError'),
-        lastName: document.getElementById('nameError'), // 姓と名の両方に同じエラーメッセージを共有
+        lastName: document.getElementById('nameError'),
         firstName: document.getElementById('nameError'),
         email: document.getElementById('emailError'),
         emailFormat: document.getElementById('emailFormatError'),
         memberType: document.getElementById('memberTypeError'),
-        familyLastName: document.getElementById('familyNameError'), // 家族姓と名の両方に同じエラーメッセージを共有
+        familyLastName: document.getElementById('familyNameError'),
         familyFirstName: document.getElementById('familyNameError'),
         ageGroup: document.getElementById('ageGroupError'),
         sTicketFormat: document.getElementById('sTicketFormatError'),
@@ -110,100 +110,108 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!firstInvalidField) firstInvalidField = email;
         } else {
             // メールアドレスの厳密な正規表現チェック
-            const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}<span class="math-inline">/;
-if \(\!emailRegex\.test\(email\.value\)\) \{
-displayError\('emailFormat', '正しい形式でメールアドレスを入力してください。'\);
-isValid \= false;
-if \(\!firstInvalidField\) firstInvalidField \= email;
-\}
-\}
-if \(isValid\) \{
-nextSection\(2\);
-\} else if \(firstInvalidField\) \{
-firstInvalidField\.focus\(\);
-\}
-\}
-// セクション2のバリデーションと遷移
-function validateSection2AndNext\(\) \{
-clearAllErrors\(\);
-let isValid \= true;
-let firstInvalidField \= null;
-const memberType \= document\.getElementById\('memberType'\);
-if \(\!memberType\.value\) \{
-displayError\('memberType', '必須入力欄です。'\);
-isValid \= false;
-if \(\!firstInvalidField\) firstInvalidField \= memberType;
-\}
-if \(memberType\.value \=\=\= '夫婦・家族・兄弟'\) \{
-const familyLastName \= document\.getElementById\('familyLastName'\);
-const familyFirstName \= document\.getElementById\('familyFirstName'\);
-const ageGroup \= document\.getElementById\('ageGroup'\);
-if \(\!familyLastName\.value\) \{
-displayError\('familyLastName', '必須入力欄です。'\);
-isValid \= false;
-if \(\!firstInvalidField\) firstInvalidField \= familyLastName;
-\}
-if \(\!familyFirstName\.value\) \{
-displayError\('familyFirstName', '必須入力欄です。'\);
-isValid \= false;
-if \(\!firstInvalidField\) firstInvalidField \= familyFirstName;
-\}
-if \(\!ageGroup\.value\) \{
-displayError\('ageGroup', '必須入力欄です。'\);
-isValid \= false;
-if \(\!firstInvalidField\) firstInvalidField \= ageGroup;
-\}
-\}
-if \(isValid\) \{
-// 団員区分に関わらず、必ずセクション3（チケット種類・枚数）へ遷移
-nextSection\(3\);
-\} else if \(firstInvalidField\) \{
-firstInvalidField\.focus\(\);
-\}
-\}
-// セクション2の団員区分変更時の家族情報表示制御
-function toggleFamilyInfo\(\) \{
-const memberType \= document\.getElementById\('memberType'\)\.value;
-const familyInfoGroup \= document\.getElementById\('familyInfoGroup'\);
-const familyLastName \= document\.getElementById\('familyLastName'\);
-const familyFirstName \= document\.getElementById\('familyFirstName'\);
-const ageGroup \= document\.getElementById\('ageGroup'\);
-if \(memberType \=\=\= '夫婦・家族・兄弟'\) \{
-familyInfoGroup\.style\.display \= 'block';
-familyLastName\.setAttribute\('required', 'required'\);
-familyFirstName\.setAttribute\('required', 'required'\);
-ageGroup\.setAttribute\('required', 'required'\);
-\} else \{
-familyInfoGroup\.style\.display \= 'none';
-familyLastName\.removeAttribute\('required'\);
-familyFirstName\.removeAttribute\('required'\);
-ageGroup\.removeAttribute\('required'\);
-// 非表示になったら入力値をクリアし、エラーもクリア
-familyLastName\.value \= '';
-familyFirstName\.value \= '';
-ageGroup\.value \= '';
-clearError\('familyLastName'\);
-clearError\('ageGroup'\);
-\}
-// 団員区分変更時にノルマチェックを再実行
-checkNorma\(\);
-\}
-/\*\*
-\* チケット枚数入力のバリデーションと合計枚数の更新を行う関数
-\* @param \{HTMLInputElement\} inputElement \- 変更されたチケット入力フィールドの要素
-\*/
-function validateTicketInput\(inputElement\) \{
-clearError\(inputElement\.id \+ 'Format'\); // まず形式エラーをクリア
-clearError\(inputElement\.id \+ 'Limit'\); // まず制限エラーをクリア
-const value \= inputElement\.value;
-if \(value \=\=\= ''\) \{ // 空欄も許容し、0として扱う
-updateTotalTickets\(\); // 合計枚数を更新
-return true;
-\}
-if \(\!/^\\d\*</span>/.test(value)) { // 半角数字以外が含まれている場合
+            const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+            if (!emailRegex.test(email.value)) {
+                displayError('emailFormat', '正しい形式でメールアドレスを入力してください。');
+                isValid = false;
+                if (!firstInvalidField) firstInvalidField = email;
+            }
+        }
+
+        if (isValid) {
+            nextSection(2);
+        } else if (firstInvalidField) {
+            firstInvalidField.focus();
+        }
+    }
+
+    // セクション2のバリデーションと遷移
+    function validateSection2AndNext() {
+        clearAllErrors();
+        let isValid = true;
+        let firstInvalidField = null;
+
+        const memberType = document.getElementById('memberType');
+        if (!memberType.value) {
+            displayError('memberType', '必須入力欄です。');
+            isValid = false;
+            if (!firstInvalidField) firstInvalidField = memberType;
+        }
+
+        if (memberType.value === '夫婦・家族・兄弟') {
+            const familyLastName = document.getElementById('familyLastName');
+            const familyFirstName = document.getElementById('familyFirstName');
+            const ageGroup = document.getElementById('ageGroup');
+
+            if (!familyLastName.value) {
+                displayError('familyLastName', '必須入力欄です。');
+                isValid = false;
+                if (!firstInvalidField) firstInvalidField = familyLastName;
+            }
+            if (!familyFirstName.value) {
+                displayError('familyFirstName', '必須入力欄です。');
+                isValid = false;
+                if (!firstInvalidField) firstInvalidField = familyFirstName;
+            }
+            if (!ageGroup.value) {
+                displayError('ageGroup', '必須入力欄です。');
+                isValid = false;
+                if (!firstInvalidField) firstInvalidField = ageGroup;
+            }
+        }
+
+        if (isValid) {
+            nextSection(3);
+        } else if (firstInvalidField) {
+            firstInvalidField.focus();
+        }
+    }
+
+    // セクション2の団員区分変更時の家族情報表示制御
+    function toggleFamilyInfo() {
+        const memberType = document.getElementById('memberType').value;
+        const familyInfoGroup = document.getElementById('familyInfoGroup');
+        const familyLastName = document.getElementById('familyLastName');
+        const familyFirstName = document.getElementById('familyFirstName');
+        const ageGroup = document.getElementById('ageGroup');
+
+        if (familyInfoGroup && familyLastName && familyFirstName && ageGroup) {
+            if (memberType === '夫婦・家族・兄弟') {
+                familyInfoGroup.style.display = 'block';
+                familyLastName.setAttribute('required', 'required');
+                familyFirstName.setAttribute('required', 'required');
+                ageGroup.setAttribute('required', 'required');
+            } else {
+                familyInfoGroup.style.display = 'none';
+                familyLastName.removeAttribute('required');
+                familyFirstName.removeAttribute('required');
+                ageGroup.removeAttribute('required');
+                // 非表示になったら入力値をクリアし、エラーもクリア
+                familyLastName.value = '';
+                familyFirstName.value = '';
+                ageGroup.value = '';
+                clearError('familyLastName');
+                clearError('ageGroup');
+            }
+        }
+        // 団員区分変更時もノルマチェックを再実行
+        checkNorma();
+    }
+
+    /**
+     * チケット枚数入力のバリデーションと合計枚数の更新を行う関数
+     * @param {HTMLInputElement} inputElement - 変更されたチケット入力フィールドの要素
+     */
+    function validateTicketInput(inputElement) {
+        clearError(inputElement.id + 'Format'); // まず形式エラーをクリア
+        clearError(inputElement.id + 'Limit'); // まず制限エラーをクリア
+
+        const value = inputElement.value;
+        // 半角数字以外が含まれている場合、または空欄の場合の処理
+        if (!/^\d*$/.test(value)) { // 半角数字以外が含まれている場合
             displayError(inputElement.id + 'Format', '半角数字で入力してください。');
-            updateTotalTickets(); // 合計枚数を更新（不正な値は0として扱う）
-            return false; // 数字形式エラーがある場合はそれ以上チェックしない
+            updateTotalTickets(); // 不正な値の場合も合計枚数を更新 (0として扱われる)
+            return false;
         }
 
         const numValue = parseInt(value) || 0; // 数値に変換、空欄は0とする
@@ -252,41 +260,43 @@ if \(\!/^\\d\*</span>/.test(value)) { // 半角数字以外が含まれている
         const memberTypeSelect = document.getElementById('memberType');
         const ageGroupSelect = document.getElementById('ageGroup');
         const totalTicketsSpan = document.getElementById('totalTickets');
+        const normaMessageElement = document.getElementById('normaMessage');
+        const confirmButton = document.getElementById('confirmButton'); // 確認ボタンのID
 
         const memberType = memberTypeSelect ? memberTypeSelect.value : '';
         const ageGroup = ageGroupSelect ? ageGroupSelect.value : '';
         const totalTickets = totalTicketsSpan ? parseInt(totalTicketsSpan.textContent) || 0 : 0;
 
-        const normaMessageElement = document.getElementById('normaMessage'); // HTMLでこのIDの要素があることを想定
-        const confirmButton = document.getElementById('confirmButton'); // HTMLでこのIDの要素があることを想定
+        // エラーメッセージ要素とボタンが存在することを確認
+        if (!normaMessageElement || !confirmButton) {
+            console.error("ノルマチェックに必要なDOM要素が見つかりません。");
+            return; // 処理を中断
+        }
+        
+        // エラーメッセージをクリア
+        clearError('normaCheck'); // NormaCheckErrorMessageをクリアするため
 
         // 団員区分が選択されていない場合はノルマチェックを行わない
         if (!memberType) {
-            if (normaMessageElement) {
-                normaMessageElement.textContent = '団員区分を選択してください。';
-                normaMessageElement.style.color = 'gray';
-            }
-            if (confirmButton) confirmButton.disabled = true; // 確認ボタンを無効にする
+            normaMessageElement.textContent = '団員区分を選択してください。';
+            normaMessageElement.style.color = 'gray';
+            confirmButton.disabled = true; // 確認ボタンを無効にする
             return;
         }
 
         // 「夫婦・家族・兄弟」選択時のみ年代の選択を必須とする
         if (memberType === '夫婦・家族・兄弟' && !ageGroup) {
-            if (normaMessageElement) {
-                normaMessageElement.textContent = '年代を選択してください。';
-                normaMessageElement.style.color = 'gray';
-            }
-            if (confirmButton) confirmButton.disabled = true; // 確認ボタンを無効にする
+            normaMessageElement.textContent = '年代を選択してください。';
+            normaMessageElement.style.color = 'gray';
+            confirmButton.disabled = true; // 確認ボタンを無効にする
             return;
         }
 
         // APPS_SCRIPT_API_URLが正しく設定されているか最終チェック
         if (typeof APPS_SCRIPT_API_URL === 'undefined' || !APPS_SCRIPT_API_URL || APPS_SCRIPT_API_URL.includes('{APPS_SCRIPT_API_URL}')) {
-            if (normaMessageElement) {
-                normaMessageElement.textContent = 'エラー: スクリプトAPIのURLが設定されていません。管理者に連絡してください。';
-                normaMessageElement.style.color = 'red';
-            }
-            if (confirmButton) confirmButton.disabled = true;
+            normaMessageElement.textContent = 'エラー: スクリプトAPIのURLが設定されていません。管理者に連絡してください。';
+            normaMessageElement.style.color = 'red';
+            confirmButton.disabled = true;
             console.error('APPS_SCRIPT_API_URL is not set or is incorrect.');
             return;
         }
@@ -299,46 +309,38 @@ if \(\!/^\\d\*</span>/.test(value)) { // 半角数字以外が含まれている
         });
 
         try {
-            const response = await fetch(`${APPS_SCRIPT_API_URL}?${params.toString()}`);
+            const response = await fetch(`<span class="math-inline">\{APPS\_SCRIPT\_API\_URL\}?</span>{params.toString()}`);
             if (!response.ok) {
                 const errorText = await response.text();
                 console.error(`GASからのHTTPエラー応答: ${response.status} ${errorText}`);
-                if (normaMessageElement) {
-                     normaMessageElement.textContent = `ノルマチェック中にサーバーエラーが発生しました (${response.status})。管理者に連絡してください。`;
-                     normaMessageElement.style.color = 'red';
-                }
-                if (confirmButton) confirmButton.disabled = true;
+                normaMessageElement.textContent = `ノルマチェック中にサーバーエラーが発生しました (${response.status})。管理者に連絡してください。`;
+                normaMessageElement.style.color = 'red';
+                confirmButton.disabled = true;
                 return;
             }
             const data = await response.json();
             console.log("ノルマチェック結果:", data);
 
             if (data.errorMessage) {
-                if (normaMessageElement) {
-                    normaMessageElement.textContent = `エラー: ${data.errorMessage}`;
-                    normaMessageElement.style.color = 'red';
-                }
-                if (confirmButton) confirmButton.disabled = true;
+                normaMessageElement.textContent = `エラー: ${data.errorMessage}`;
+                normaMessageElement.style.color = 'red';
+                confirmButton.disabled = true;
             } else {
-                if (normaMessageElement) {
-                    if (data.isNormaMet) {
-                        normaMessageElement.textContent = `ノルマ (${data.requiredTickets}枚) を達成しています。`;
-                        normaMessageElement.style.color = 'green';
-                    } else {
-                        normaMessageElement.textContent = `ノルマ (${data.requiredTickets}枚) 不足です。申込必要枚数は合計${data.requiredTickets}枚です。`;
-                        normaMessageElement.style.color = 'orange';
-                    }
+                if (data.isNormaMet) {
+                    normaMessageElement.textContent = `ノルマ (${data.requiredTickets}枚) を達成しています。`;
+                    normaMessageElement.style.color = 'green';
+                } else {
+                    normaMessageElement.textContent = `ノルマ (<span class="math-inline">\{data\.requiredTickets\}枚\) 不足です。申込必要枚数は合計</span>{data.requiredTickets}枚です。`;
+                    normaMessageElement.style.color = 'orange';
                 }
-                // ノルマ不足でも、確認画面への遷移や最終送信はできるようにする
-                if (confirmButton) confirmButton.disabled = false;
+                // ノルマ不足でも、確認画面への遷移や最終送信はできるようにするため、ボタンは有効にする
+                confirmButton.disabled = false;
             }
         } catch (error) {
             console.error("ノルマチェック中にエラーが発生しました:", error);
-            if (normaMessageElement) {
-                normaMessageElement.textContent = `ノルマチェック中に通信エラーが発生しました。ネットワーク接続を確認してください。（エラー詳細: ${error.message}）`;
-                normaMessageElement.style.color = 'red';
-            }
-            if (confirmButton) confirmButton.disabled = true;
+            normaMessageElement.textContent = `ノルマチェック中に通信エラーが発生しました。ネットワーク接続を確認してください。（エラー詳細: ${error.message}）`;
+            normaMessageElement.style.color = 'red';
+            confirmButton.disabled = true;
         }
     }
 
@@ -348,6 +350,12 @@ if \(\!/^\\d\*</span>/.test(value)) { // 半角数字以外が含まれている
         const rankUp = document.getElementById('rankUp');
         const rankDown = document.getElementById('rankDown');
         const rankNoChange = document.getElementById('rankNoChange');
+
+        // nullチェックを追加
+        if (!rankUp || !rankDown || !rankNoChange) {
+            console.warn("ランク変更チェックボックスのDOM要素が見つかりません。");
+            return;
+        }
 
         if (clickedCheckbox === rankNoChange) {
             if (rankNoChange.checked) {
@@ -375,20 +383,20 @@ if \(\!/^\\d\*</span>/.test(value)) { // 半角数字以外が含まれている
         let isValid = true;
         let firstInvalidField = null;
 
-        // 半角数字、枚数制限のバリデーションを改めて実行
         const sTicketInput = document.getElementById('sTicket');
         const aTicketInput = document.getElementById('aTicket');
         const bTicketInput = document.getElementById('bTicket');
         const cTicketInput = document.getElementById('cTicket');
 
-        // `validateTicketInput` は既にイベントリスナーでリアルタイムに動いているが、
-        // 念のためここで最終チェックし、エラーがあればここで止める
+        // 各チケット入力のバリデーションを呼び出し、結果をチェック
+        // validateTicketInputは、内部でdisplayErrorを呼び出すため、ここでは戻り値のみ利用
         if (!validateTicketInput(sTicketInput)) { isValid = false; if (!firstInvalidField) firstInvalidField = sTicketInput; }
         if (!validateTicketInput(aTicketInput)) { isValid = false; if (!firstInvalidField) firstInvalidField = aTicketInput; }
         if (!validateTicketInput(bTicketInput)) { isValid = false; if (!firstInvalidField) firstInvalidField = bTicketInput; }
         if (!validateTicketInput(cTicketInput)) { isValid = false; if (!firstInvalidField) firstInvalidField = cTicketInput; }
 
-        // もしvalidateTicketInputがエラーを表示している場合、isValidをfalseにする
+        // 上記のバリデーションでエラーが表示されているか最終確認
+        // エラーが表示されていれば、isValidをfalseに保つ
         if (document.getElementById('sTicketFormatError').classList.contains('show') ||
             document.getElementById('aTicketFormatError').classList.contains('show') ||
             document.getElementById('bTicketFormatError').classList.contains('show') ||
@@ -396,7 +404,7 @@ if \(\!/^\\d\*</span>/.test(value)) { // 半角数字以外が含まれている
             document.getElementById('bTicketLimitError').classList.contains('show') ||
             document.getElementById('cTicketLimitError').classList.contains('show')) {
             isValid = false;
-            if (!firstInvalidField) { // 最初の不正フィールドにフォーカス
+            if (!firstInvalidField) { // 最初の不正フィールドにフォーカスを当てるため
                 if (document.getElementById('sTicketFormatError').classList.contains('show')) firstInvalidField = sTicketInput;
                 else if (document.getElementById('aTicketFormatError').classList.contains('show')) firstInvalidField = aTicketInput;
                 else if (document.getElementById('bTicketFormatError').classList.contains('show')) firstInvalidField = bTicketInput;
@@ -405,10 +413,11 @@ if \(\!/^\\d\*</span>/.test(value)) { // 半角数字以外が含まれている
                 else if (document.getElementById('cTicketLimitError').classList.contains('show')) firstInvalidField = cTicketInput;
             }
         }
-
+        
+        // ここでisValidがfalseであれば、次に進まず終了
         if (!isValid) {
             if (firstInvalidField) firstInvalidField.focus();
-            return; // 他のバリデーションエラーがあればここで終了
+            return;
         }
 
         // 全てのチケット枚数フィールドが空の場合でもバリデーションは通過させる（0として扱うため）
@@ -425,14 +434,13 @@ if \(\!/^\\d\*</span>/.test(value)) { // 半角数字以外が含まれている
 
         try {
             const params = new URLSearchParams({
-                action: 'getNormaData', // doGetでこのactionをチェックするようにしたと仮定
+                action: 'getNormaData',
                 memberType: memberType,
                 ageGroup: ageGroup,
                 totalTickets: totalTickets
             });
 
-            // ★★★ ここを修正します。テンプレートリテラルの${}で変数を展開します。 ★★★
-            const fetchResponse = await fetch(`${APPS_SCRIPT_API_URL}?${params.toString()}`, {
+            const fetchResponse = await fetch(`<span class="math-inline">\{APPS\_SCRIPT\_API\_URL\}?</span>{params.toString()}`, {
                 method: 'GET'
             });
 
@@ -446,7 +454,6 @@ if \(\!/^\\d\*</span>/.test(value)) { // 半角数字以外が含まれている
 
             const response = await fetchResponse.json();
 
-            // ***** ここを修正します。GASからの応答形式が変わったため、期待するプロパティをチェックします。 *****
             if (!response || typeof response.isNormaMet === 'undefined') {
                 console.error("予期せぬGAS応答形式:", response);
                 displayError('normaCheck', 'ノルマチェック中に予期せぬエラーが発生しました。管理者に連絡してください。');
@@ -455,12 +462,14 @@ if \(\!/^\\d\*</span>/.test(value)) { // 半角数字以外が含まれている
             }
 
             if (!response.isNormaMet) {
+                // ノルマ不足の場合、エラーメッセージを表示して次に進まない
                 const errorMessage = response.errorMessage ? response.errorMessage : `ノルマ枚数不足です。申込必要枚数は合計${response.requiredTickets}枚です。`;
                 displayError('normaCheck', errorMessage);
                 document.getElementById('normaCheckErrorMessage').scrollIntoView({ behavior: 'smooth', block: 'center' });
                 hideLoadingOverlay();
-                return;
+                return; // ここで処理を停止し、次のセクションには進まない
             } else {
+                // ノルマ達成の場合、エラーメッセージをクリアして次に進む
                 clearError('normaCheck');
                 generateSummaryContent();
                 nextSection(4); // 確認画面へ
@@ -481,16 +490,16 @@ if \(\!/^\\d\*</span>/.test(value)) { // 半角数字以外が含まれている
 
         let html = '';
         html += `<p><strong>パート：</strong>${values.part}</p>`;
-        html += `<p><strong>お名前：：</strong>${values.lastName} ${values.firstName}</p>`;
-        html += `<p><strong>メールアドレス：：</strong>${values.email}</p>`;
-        html += `<p><strong>団員区分：：</strong>${values.memberType}</p>`;
+        html += `<p><strong>お名前：</strong>${values.lastName} ${values.firstName}</p>`;
+        html += `<p><strong>メールアドレス：</strong>${values.email}</p>`;
+        html += `<p><strong>団員区分：</strong>${values.memberType}</p>`;
 
         if (values.memberType === '夫婦・家族・兄弟') {
-            html += `<p><strong>ご家族のお名前：：</strong>${values.familyLastName} ${values.familyFirstName}</p>`;
-            html += `<p><strong>あなたの年代：：</strong>${values.ageGroup}</p>`;
+            html += `<p><strong>ご家族のお名前：</strong>${values.familyLastName} ${values.familyFirstName}</p>`;
+            html += `<p><strong>あなたの年代：</strong>${values.ageGroup}</p>`;
         }
 
-        html += `<p><strong>チケット枚数：：</strong></p>`;
+        html += `<p><strong>チケット枚数：</strong></p>`;
         html += `<ul>`;
         html += `<li>S券：${values.sTicket}枚</li>`;
         html += `<li>A券：${values.aTicket}枚</li>`;
@@ -503,7 +512,7 @@ if \(\!/^\\d\*</span>/.test(value)) { // 半角数字以外が含まれている
 
 
         // 任意項目の表示制御（項目名は表示し、値がなければ何も表示しない）
-        html += `<p><strong>離れた席のアサイン：：</strong>`;
+        html += `<p><strong>離れた席のアサイン：</strong>`;
         if (values.separateSeats) {
             html += `OK`;
         } else {
@@ -522,9 +531,9 @@ if \(\!/^\\d\*</span>/.test(value)) { // 半角数字以外が含まれている
                 rankChangeText += '席のランクダウン可';
             }
         }
-        html += `<p><strong>席のランク変更：：</strong>${rankChangeText || '回答無し'}</p>`;
+        html += `<p><strong>席のランク変更：</strong>${rankChangeText || '回答無し'}</p>`;
 
-        html += `<p><strong>席割り当てのご相談事項・備考：：</strong>`;
+        html += `<p><strong>席割り当てのご相談事項・備考：</strong>`;
         if (values.seatPreference) {
             html += `${values.seatPreference.replace(/\n/g, '<br>')}`;
         } else {
@@ -547,14 +556,19 @@ if \(\!/^\\d\*</span>/.test(value)) { // 半角数字以外が含まれている
                 if (input.id === 'separateSeats') {
                     values.separateSeats = input.checked; // true/falseで値を格納
                 } else if (input.name === '席のランク変更可否' || input.name === '席のランク変更不可') {
-                    values.rankUp = document.getElementById('rankUp').checked;
-                    values.rankDown = document.getElementById('rankDown').checked;
-                    values.rankNoChange = document.getElementById('rankNoChange').checked;
+                    // rankUp, rankDown, rankNoChange はIDで直接取得するため、ここではname属性での分類は不要
+                    // getFormValuesが呼ばれる時点では、これらのチェックボックスの最新の状態を取得する必要がある
+                    // すでにhandleRankChangeCheckboxで排他処理がされているため、ここで複雑なロジックは不要
                 }
             } else if (input.name) { // name属性があるものだけ取得
                 values[input.id || input.name] = input.value;
             }
         });
+
+        // ランク変更のチェックボックスの状態を明示的に取得
+        values.rankUp = document.getElementById('rankUp') ? document.getElementById('rankUp').checked : false;
+        values.rankDown = document.getElementById('rankDown') ? document.getElementById('rankDown').checked : false;
+        values.rankNoChange = document.getElementById('rankNoChange') ? document.getElementById('rankNoChange').checked : false;
 
         // 数値は文字列として取得されるので、数値に変換
         values.sTicket = parseInt(values.sTicket) || 0;
@@ -568,13 +582,19 @@ if \(\!/^\\d\*</span>/.test(value)) { // 半角数字以外が含まれている
     // ローディングオーバーレイ表示関数
     function showLoadingOverlay(message = '処理中です。しばらくお待ちください...') {
         const overlay = document.getElementById('loadingOverlay');
-        overlay.querySelector('p').innerText = message;
-        overlay.style.display = 'flex';
+        const loadingMessage = overlay ? overlay.querySelector('p') : null;
+        if (overlay && loadingMessage) {
+            loadingMessage.innerText = message;
+            overlay.style.display = 'flex';
+        }
     }
 
     // ローディングオーバーレイ非表示関数
     function hideLoadingOverlay() {
-        document.getElementById('loadingOverlay').style.display = 'none';
+        const overlay = document.getElementById('loadingOverlay');
+        if (overlay) {
+            overlay.style.display = 'none';
+        }
     }
 
     // フォーム最終送信ボタンのイベントリスナー
@@ -584,18 +604,13 @@ if \(\!/^\\d\*</span>/.test(value)) { // 半角数字以外が含まれている
 
         try {
             console.log("クライアント: submitTicketApplicationを呼び出します。");
-            // google.script.run を使う場合は、WebアプリのデプロイURLではなく、
-            // そのWebアプリを公開しているHTMLファイル内で使用する必要があります。
-            // GitHub Pagesからのfetchリクエストとは異なります。
-            // ここでfetchを使うのであれば、formDataをURLSearchParamsに変換してGETリクエストに含める必要があります。
-            // あるいはPOSTリクエストでJSONとして送信します。
-            // 現状のHTMLがWebアプリとして公開されている場合、google.script.runは動作しますが、
-            // GitHub Pagesからは動作しません。
-            // 今回はfetchを使うように修正します。
-            const params = new URLSearchParams(formData); // formDataを直接SearchParamsにする
-
-            const fetchResponse = await fetch(`${APPS_SCRIPT_API_URL}?${params.toString()}`, {
-                method: 'GET' // GASのdoGetを使うのでGET
+            // POSTリクエストでJSONとして送信
+            const fetchResponse = await fetch(APPS_SCRIPT_API_URL, {
+                method: 'POST', // doPostを使うのでPOST
+                headers: {
+                    'Content-Type': 'application/json' // JSON形式であることを伝える
+                },
+                body: JSON.stringify(formData) // フォームデータをJSON文字列に変換して送信
             });
 
             if (!fetchResponse.ok) {
@@ -627,104 +642,5 @@ if \(\!/^\\d\*</span>/.test(value)) { // 半角数字以外が含まれている
 
     const openModalLink = document.getElementById('openSeatingChartModal');
     const seatingChartModal = document.getElementById('seatingChartModal');
-    const closeButton = seatingChartModal.querySelector('.close-button');
-    const seatingChartImage = seatingChartModal.querySelector('.seating-chart-image');
-
-    // リンクをクリックでモーダルを開く
-    if (openModalLink) {
-        openModalLink.addEventListener('click', (event) => {
-            event.preventDefault(); // デフォルトのリンク動作をキャンセル
-            seatingChartModal.style.display = 'flex'; // flexを使って中央揃えを有効にする
-            // ここに画像のURLを設定
-            seatingChartImage.src = "https://image.jimcdn.com/app/cms/image/transf/dimension=856x10000:format=png/path/s5bd072393dfe96d6/image/id3d5e66f11c6e827/version/1748520505/%E6%9D%B1%E4%BA%AC%E3%82%A2%E3%82%AB%E3%83%87%E3%83%9F%E3%83%BC%E5%90%88%E5%94%B1%E5%9B%A3%E7%AC%AC%EF%BC%97%EF%BC%90%E5%9B%9E%E5%AE%9A%E6%9C%9F%E6%BC%94%E5%A5%8F%E4%BC%9A%E7%94%A8%E3%82%AA%E3%83%9A%E3%83%A9%E3%82%B7%E3%83%86%E3%82%A3%E5%BA%A7%E5%B8%AD%E8%A1%A8.png";
-        });
-    }
-
-    // 閉じるボタンをクリックでモーダルを閉じる
-    if (closeButton) {
-        closeButton.addEventListener('click', () => {
-            seatingChartModal.style.display = 'none';
-        });
-    }
-
-    // 画像自体をクリックでモーダルを閉じる
-    if (seatingChartImage) {
-        seatingChartImage.addEventListener('click', () => {
-            seatingChartModal.style.display = 'none';
-        });
-    }
-
-    // モーダルの外側をクリックで閉じる
-    if (seatingChartModal) {
-        window.addEventListener('click', (event) => {
-            if (event.target === seatingChartModal) {
-                seatingChartModal.style.display = 'none';
-            }
-        });
-    }
-
-    // セクション1の「次へ」ボタンにイベントリスナーを追加
-    const nextSection1Button = document.getElementById('nextSection1Button');
-    if (nextSection1Button) {
-        nextSection1Button.addEventListener('click', validateSection1AndNext);
-    }
-    // セクション2の「次へ」ボタンにイベントリスナーを追加
-    const nextSection2Button = document.getElementById('nextSection2Button');
-    if (nextSection2Button) {
-        nextSection2Button.addEventListener('click', validateSection2AndNext);
-    }
-    // セクション3の「確認画面へ」ボタンにイベントリスナーを追加
-    const nextSection3Button = document.getElementById('nextSection3Button');
-    if (nextSection3Button) {
-        nextSection3Button.addEventListener('click', validateSection3AndNext);
-    }
-
-    // 戻るボタンのイベントリスナーを追加
-    const backSection1Button = document.getElementById('backSection1Button');
-    if (backSection1Button) {
-        backSection1Button.addEventListener('click', () => prevSection(1));
-    }
-    const backSection2Button = document.getElementById('backSection2Button');
-    if (backSection2Button) {
-        backSection2Button.addEventListener('click', () => prevSection(2));
-    }
-    const backSection3Button = document.getElementById('backSection3Button');
-    if (backSection3Button) {
-        backSection3Button.addEventListener('click', () => prevSection(3));
-    }
-
-    // 団員区分の選択変更時に家族情報の表示を切り替えるイベントリスナー
-    const memberTypeSelect = document.getElementById('memberType');
-    if (memberTypeSelect) {
-        memberTypeSelect.addEventListener('change', toggleFamilyInfo);
-    }
-
-    // チケット枚数入力フィールドにイベントリスナーを追加
-    const ticketInputs = ['sTicket', 'aTicket', 'bTicket', 'cTicket'];
-    ticketInputs.forEach(id => {
-        const inputElement = document.getElementById(id);
-        if (inputElement) {
-            inputElement.addEventListener('input', () => validateTicketInput(inputElement));
-        }
-    });
-
-    // 席のランク変更チェックボックスにイベントリスナーを追加
-    const rankUpCheckbox = document.getElementById('rankUp');
-    const rankDownCheckbox = document.getElementById('rankDown');
-    const rankNoChangeCheckbox = document.getElementById('rankNoChange');
-
-    if (rankUpCheckbox) {
-        rankUpCheckbox.addEventListener('change', () => handleRankChangeCheckbox(rankUpCheckbox));
-    }
-    if (rankDownCheckbox) {
-        rankDownCheckbox.addEventListener('change', () => handleRankChangeCheckbox(rankDownCheckbox));
-    }
-    if (rankNoChangeCheckbox) {
-        rankNoChangeCheckbox.addEventListener('change', () => handleRankChangeCheckbox(rankNoChangeCheckbox));
-    }
-
-    // 初期表示
-    showSection(1);
-    toggleFamilyInfo(); // 初期ロード時に家族情報グループの表示状態を適切に設定
-    updateTotalTickets(); // ページロード時にチケット合計とノルマを計算
-});
+    const closeButton = seatingChartModal ? seatingChartModal.querySelector('.close-button') : null;
+    const seatingChartImage = seatingChartModal ? seatingChartModal.querySelector('.seating-chart
