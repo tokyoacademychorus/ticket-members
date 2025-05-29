@@ -309,7 +309,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         try {
-            const response = await fetch(`<span class="math-inline">\{APPS\_SCRIPT\_API\_URL\}?</span>{params.toString()}`);
+            // ここが修正された行です。不要なHTMLタグを削除しました。
+            const response = await fetch(`${APPS_SCRIPT_API_URL}?${params.toString()}`);
             if (!response.ok) {
                 const errorText = await response.text();
                 console.error(`GASからのHTTPエラー応答: ${response.status} ${errorText}`);
@@ -330,7 +331,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     normaMessageElement.textContent = `ノルマ (${data.requiredTickets}枚) を達成しています。`;
                     normaMessageElement.style.color = 'green';
                 } else {
-                    normaMessageElement.textContent = `ノルマ (<span class="math-inline">\{data\.requiredTickets\}枚\) 不足です。申込必要枚数は合計</span>{data.requiredTickets}枚です。`;
+                    // ここも修正されました。HTMLタグの断片を削除し、適切な文字列リテラルに変更しました。
+                    normaMessageElement.textContent = `ノルマ (${data.requiredTickets}枚) 不足です。申込必要枚数は合計${data.requiredTickets}枚です。`;
                     normaMessageElement.style.color = 'orange';
                 }
                 // ノルマ不足でも、確認画面への遷移や最終送信はできるようにするため、ボタンは有効にする
@@ -440,7 +442,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 totalTickets: totalTickets
             });
 
-            const fetchResponse = await fetch(`<span class="math-inline">\{APPS\_SCRIPT\_API\_URL\}?</span>{params.toString()}`, {
+            const fetchResponse = await fetch(`${APPS_SCRIPT_API_URL}?${params.toString()}`, {
                 method: 'GET'
             });
 
@@ -643,4 +645,96 @@ document.addEventListener('DOMContentLoaded', () => {
     const openModalLink = document.getElementById('openSeatingChartModal');
     const seatingChartModal = document.getElementById('seatingChartModal');
     const closeButton = seatingChartModal ? seatingChartModal.querySelector('.close-button') : null;
-    const seatingChartImage = seatingChartModal ? seatingChartModal.querySelector('.seating-chart
+    const seatingChartImage = seatingChartModal ? seatingChartModal.querySelector('.seating-chart') : null; // ここが途切れていました
+    
+    // イベントリスナーの登録
+    if (document.getElementById('nextSection1Button')) {
+        document.getElementById('nextSection1Button').addEventListener('click', validateSection1AndNext);
+    }
+    if (document.getElementById('prevSection2Button')) {
+        document.getElementById('prevSection2Button').addEventListener('click', () => prevSection(1));
+    }
+    if (document.getElementById('nextSection2Button')) {
+        document.getElementById('nextSection2Button').addEventListener('click', validateSection2AndNext);
+    }
+    if (document.getElementById('prevSection3Button')) {
+        document.getElementById('prevSection3Button').addEventListener('click', () => prevSection(2));
+    }
+    // セクション3の確認画面へ進むボタン
+    if (document.getElementById('confirmButton')) {
+        document.getElementById('confirmButton').addEventListener('click', validateSection3AndNext);
+    }
+    if (document.getElementById('prevSection4Button')) {
+        document.getElementById('prevSection4Button').addEventListener('click', () => prevSection(3));
+    }
+    // 団員区分変更時のイベントリスナー
+    const memberTypeElement = document.getElementById('memberType');
+    if (memberTypeElement) {
+        memberTypeElement.addEventListener('change', toggleFamilyInfo);
+    }
+    // 年代変更時のイベントリスナー
+    const ageGroupElement = document.getElementById('ageGroup');
+    if (ageGroupElement) {
+        ageGroupElement.addEventListener('change', checkNorma); // 年代変更時にノルマを再チェック
+    }
+
+    // チケット枚数入力フィールドのイベントリスナー
+    const ticketInputs = ['sTicket', 'aTicket', 'bTicket', 'cTicket'];
+    ticketInputs.forEach(id => {
+        const inputElement = document.getElementById(id);
+        if (inputElement) {
+            inputElement.addEventListener('input', () => validateTicketInput(inputElement));
+        }
+    });
+    
+    // 席のランク変更チェックボックスのイベントリスナー
+    const rankUpCheckbox = document.getElementById('rankUp');
+    const rankDownCheckbox = document.getElementById('rankDown');
+    const rankNoChangeCheckbox = document.getElementById('rankNoChange');
+
+    if (rankUpCheckbox) {
+        rankUpCheckbox.addEventListener('change', () => handleRankChangeCheckbox(rankUpCheckbox));
+    }
+    if (rankDownCheckbox) {
+        rankDownCheckbox.addEventListener('change', () => handleRankChangeCheckbox(rankDownCheckbox));
+    }
+    if (rankNoChangeCheckbox) {
+        rankNoChangeCheckbox.addEventListener('change', () => handleRankChangeCheckbox(rankNoChangeCheckbox));
+    }
+
+    // モーダル関連のイベントリスナー
+    if (openModalLink) {
+        openModalLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (seatingChartModal) {
+                seatingChartModal.style.display = 'block';
+            }
+        });
+    }
+
+    if (closeButton) {
+        closeButton.addEventListener('click', () => {
+            if (seatingChartModal) {
+                seatingChartModal.style.display = 'none';
+            }
+        });
+    }
+
+    // モーダルの外側をクリックで閉じる
+    if (seatingChartModal) {
+        window.addEventListener('click', (event) => {
+            if (event.target === seatingChartModal) {
+                seatingChartModal.style.display = 'none';
+            }
+        });
+    }
+
+    // 初期表示としてセクション1を表示
+    showSection(1);
+
+    // ページロード時、またはセクション2に戻ったときにノルマチェックを一度実行
+    // memberTypeElement.addEventListener('change', checkNorma); の後に実行されるように調整
+    if (memberTypeElement.value) {
+        checkNorma(); // ページロード時に団員区分が選択されていればノルマチェックを実行
+    }
+});
